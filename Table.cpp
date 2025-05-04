@@ -1,4 +1,5 @@
 #include "Table.h"
+#include "Globals.h"
 
 unsigned int Table::genNextId()
 {
@@ -12,7 +13,7 @@ unsigned int Table::genNextId()
 void Table::PrintRow(Node* row)
 {
     for (int i = 0; i < columnAmount; i++) {
-        std::cout << row->dat[i] << " "; 
+        std::cout << row->dat[i]->getUserInput() << " ";
     }
     std::cout << std::endl;
 }
@@ -86,17 +87,17 @@ bool Table::addRow(std::string input)
 {
     int pos = 0, start = 0, tokenCount = 0;
     DynamicArray<std::string> tokens;
-
-    for (int i = 0; i < columnAmount; ++i) {
-        int next = input.find(' ', pos);
+    for (int i = 0; i < columnAmount; i++) {
+        unsigned int next = input.find(' ', pos);
         if (next == std::string::npos && i < columnAmount - 1)
             return false;
         std::string token = input.substr(pos, next - pos);
         tokens.append(token);
         pos = (next == std::string::npos) ? input.size() : next + 1;
     }
-    
-    if (tokenCount != columnAmount) return false;
+
+    if (pos < input.size()) return false;
+
     
     DynamicArray<Info*> result;
     
@@ -132,6 +133,7 @@ bool Table::addRow(std::string input)
             for (int j = 0; j < i; j++) {
                 delete result[j];
             }
+            return false;
         }
 
         result.append(new Info(type, val));
@@ -140,6 +142,7 @@ bool Table::addRow(std::string input)
 
     rows.append(newNode);
     rowById.insert(newNode->id, newNode);
+
     return true;
 }
 
@@ -151,3 +154,10 @@ void Table::PrintAllRows()
 }
 
 Node::Node(unsigned int d, DynamicArray<Info*> list, int table): id(d),  dat(list), tabN(table) {}
+
+Node::~Node()
+{
+    for (unsigned int i = 0; i < dat.size(); ++i) {
+        delete dat[i]; 
+    }
+}

@@ -134,6 +134,7 @@
   <ItemGroup>
     <ClInclude Include="BD.h" />
     <ClInclude Include="DynamicArray.h" />
+    <ClInclude Include="Globals.h" />
     <ClInclude Include="HashMap.h" />
     <ClInclude Include="Info.h" />
     <ClInclude Include="Table.h" />

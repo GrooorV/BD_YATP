@@ -71,6 +71,11 @@ private:
 public:
     DynamicArray() : data(nullptr), capacity(0), length(0) {}
 
+    DynamicArray(const DynamicArray& other)
+        : data(nullptr), capacity(0), length(0) {
+        *this = other;
+    }
+
     ~DynamicArray() {
         delete[] data;
     }
@@ -89,6 +94,22 @@ public:
         return data[index];
     }
 
+
+    DynamicArray& operator=(const DynamicArray& other) {
+        if (this == &other) return *this;
+
+        delete[] data;
+
+        capacity = other.capacity;
+        length = other.length;
+        data = new T[capacity];
+
+        for (unsigned int i = 0; i < length; ++i) {
+            data[i] = other.data[i];
+        }
+
+        return *this;
+    }
 
     unsigned int size() const {
         return length;

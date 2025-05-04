@@ -3,9 +3,6 @@
 #include "HashMap.h"
 #include "DynamicArray.h"
 
-unsigned int ID_AMOUNT = 10000000;
-
-
 struct Node
 {
 	unsigned int id; // собственный номер
@@ -13,6 +10,8 @@ struct Node
 	int tabN; // таблица
 
 	Node(unsigned int, DynamicArray<Info*>, int);
+
+	~Node();
 };
 
 
@@ -28,7 +27,8 @@ public:
 		columns[2] = InfoType::Int;
 		columns[3] = InfoType::Int;
 		curId = 0;
-		num = 1;
+		num = 0;
+		columnAmount = 4;
 	}
 
 	~Table()
