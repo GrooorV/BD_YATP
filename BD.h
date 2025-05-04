@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include <iostream>
 #include "DynamicArray.h"
 #include "HashMap.h"
@@ -23,5 +23,5 @@ public:
 
 private:
 
-	Table* tables; //массив таблиц в бд, динамический масси в
+	Table* tables; //РјР°СЃСЃРёРІ С‚Р°Р±Р»РёС† РІ Р±Рґ, РґРёРЅР°РјРёС‡РµСЃРєРёР№ РјР°СЃСЃРё РІ
 };
