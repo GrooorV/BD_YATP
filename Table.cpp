@@ -95,10 +95,10 @@ bool Table::addRow(std::string input)
         tokens.append(token);
         pos = (next == std::string::npos) ? input.size() : next + 1;
     }
-
+    std::cout << input << " HERE 1" << std::endl;
     if (pos < input.size()) return false;
 
-    
+    std::cout << input << " HERE 2" << std::endl;
     DynamicArray<Info*> result;
     
     for (int i = 0; i < columnAmount; ++i) {
@@ -133,11 +133,13 @@ bool Table::addRow(std::string input)
             for (int j = 0; j < i; j++) {
                 delete result[j];
             }
+            std::cout << input << " HERE :(" << std::endl;
             return false;
         }
 
         result.append(new Info(type, val));
     }
+    std::cout << input << " HERE 3" << std::endl;
     Node* newNode = new Node(genNextId(), result, num);
 
     rows.append(newNode);
@@ -151,6 +153,18 @@ void Table::PrintAllRows()
     for (int i = 0; i < rows.size(); i++) {
         PrintRow(rows[i]);
     }
+}
+
+void Table::PrintRows(int amount)
+{
+    if (amount < 0) return;
+    if (amount > rows.size()) {
+        amount = rows.size();
+    }
+    for (int i = 0; i < amount; i++) {
+        PrintRow(rows[i]);
+    }
+
 }
 
 Node::Node(unsigned int d, DynamicArray<Info*> list, int table): id(d),  dat(list), tabN(table) {}
