@@ -1,4 +1,6 @@
 #pragma once
+#include <iostream>
+
 enum class InfoType {
 	Int,
 	Double,
