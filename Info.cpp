@@ -28,7 +28,7 @@ Info::~Info() {
             break;
         case InfoType::ManyInt:
         case InfoType::ManyId:
-            delete data.vi;
+            //delete data.vi;
             break;
         default:
             break;
