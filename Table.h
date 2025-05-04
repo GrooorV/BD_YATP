@@ -21,6 +21,7 @@ class Table
 public:
 	Table()
 	{
+		// Только для теста
 		columns = new InfoType[4];
 		columns[0] = InfoType::Int;
 		columns[1] = InfoType::Int;
