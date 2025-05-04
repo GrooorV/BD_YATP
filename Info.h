@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include <iostream>
 
 enum class InfoType {
@@ -25,7 +25,7 @@ public:
 	Info(InfoType t, std::string input) : type(t), userInput(input) {
 		switch (t) {
 		case InfoType::Int: {
-			// обрабатываем ошибки, считаем num, если что-то не так то throw шота
+			// РѕР±СЂР°Р±Р°С‚С‹РІР°РµРј РѕС€РёР±РєРё, СЃС‡РёС‚Р°РµРј num, РµСЃР»Рё С‡С‚Рѕ-С‚Рѕ РЅРµ С‚Р°Рє С‚Рѕ throw С€РѕС‚Р°
 		}
 
 		}

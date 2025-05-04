@@ -1,4 +1,4 @@
-#include "DynamicArray.h"
+ï»¿#include "DynamicArray.h"
 #include "HashMap.h"
 #include <iostream>
 #include <string>
@@ -7,7 +7,7 @@
 
 
 int main() {
-    std::cout << "×ÒÎ ÏÐÎÈÑÕÎÄÆÈÒ" << std::endl;
+    std::cout << "Ð§Ð¢Ðž ÐŸÐ ÐžÐ˜Ð¡Ð¥ÐžÐ”Ð–Ð˜Ð¢" << std::endl;
   
     return 0;
 }

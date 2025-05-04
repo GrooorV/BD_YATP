@@ -1,13 +1,13 @@
-#pragma once
+п»ї#pragma once
 #include "Info.h"
 
 
 struct Node
 {
-	int id; // собственный номер
-	Info* dat; // собственная строка
-	int tabN; // таблица
-	int strN; // элемент   
+	int id; // СЃРѕР±СЃС‚РІРµРЅРЅС‹Р№ РЅРѕРјРµСЂ
+	Info* dat; // СЃРѕР±СЃС‚РІРµРЅРЅР°СЏ СЃС‚СЂРѕРєР°
+	int tabN; // С‚Р°Р±Р»РёС†Р°
+	int strN; // СЌР»РµРјРµРЅС‚   
 };
 
 
@@ -35,10 +35,10 @@ private:
 	int num;
 	int columnAmount;
 	std::string tableName;
-	std::string* nameOfColumns; //названия столбцов
+	std::string* nameOfColumns; //РЅР°Р·РІР°РЅРёСЏ СЃС‚РѕР»Р±С†РѕРІ
 	HashMap<std::string, InfoType> columnTypes;
 
 	HashMap<int, Node*> rowIndices;
-	DynamicArray<Node*> rows; //массив строк в таблице
+	DynamicArray<Node*> rows; //РјР°СЃСЃРёРІ СЃС‚СЂРѕРє РІ С‚Р°Р±Р»РёС†Рµ
 
 };
