@@ -1,38 +1,41 @@
 ﻿#pragma once
-#include <iostream>
+#include <string>
+#include <vector>
 
 enum class InfoType {
-	Int,
-	Double,
-	String,
-	Date,
-	Id,
-	ManyInt,
-	ManyId,
-	None
+    Int,
+    Double,
+    String,
+    Date,
+    Id,
+    ManyInt,
+    ManyId,
+    None
 };
-
 
 class Info {
 private:
-	InfoType type;
-	std::string userInput;
-	union {
-		// int, double std::string*, date*....
-	};
+    InfoType type;
+    std::string userInput;
+
+    union Data {
+        int i;
+        double d;
+        std::string* s;
+        //сюды массив
+        Data() {}
+        ~Data() {}
+    } data; //сразу иницилизация
 
 public:
-	Info(InfoType t, std::string input) : type(t), userInput(input) {
-		switch (t) {
-		case InfoType::Int: {
-			// обрабатываем ошибки, считаем num, если что-то не так то throw шота
-		}
+    Info(InfoType t, const std::string& input);
+    ~Info();
 
-		}
-	}
+    InfoType getType() const;
 
-	std::string getInfo();
-	double getNum();
-	std::string getFileStr();
+    int getInt() const;
+    double getDouble() const;
+    const std::string& getString() const;
+
+    std::string getUserInput() const;
 };
-
