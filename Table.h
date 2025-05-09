@@ -23,18 +23,19 @@ class Table
 public:
 	Table(int number);
 
-	Table(); //вызов консруктора для чтения из файла, пока пустой
+	Table(std::string); //вызов консруктора для чтения из файла, пока пустой
 
-	~Table()
-	{
-
-	}
+	~Table();
 
 	bool addRow(std::string);
 
 	void PrintAllRows();
 
 	void PrintRows(int);
+
+	bool saveToFile();
+
+	bool loadFromFile(std::string);
 	//void someMethods() { };
 
 private:

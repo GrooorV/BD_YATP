@@ -1,7 +1,7 @@
 #include "Table.h"
 #include "Globals.h"
 #include <sstream>
-
+#include <fstream>
 
 bool isValidInt(const std::string& s) {
     if (s.empty()) return false;
@@ -157,8 +157,21 @@ Table::Table(int number)
     */
 }
 
-Table::Table()//вызов консруктора для чтения из файла, пока пустой
+/*Table::Table()//вызов консруктора для чтения из файла, пока пустой
 {
+
+}
+*/
+
+Table::~Table()
+{
+    for (int i = 0; i < rows.size(); i++) {
+        delete rows[i];
+    }
+
+    rowById.clear();
+    delete[] nameOfColumns;
+    delete[] columns;
 
 }
 
@@ -192,10 +205,10 @@ bool Table::addRow(std::string input)
         tokens.append(token);
         pos = (next == std::string::npos) ? input.size() : next + 1;
     }
-    std::cout << input << " HERE 1" << std::endl;
+    //std::cout << input << " HERE 1" << std::endl;
     if (pos < input.size()) return false;
 
-    std::cout << input << " HERE 2" << std::endl;
+    //std::cout << input << " HERE 2" << std::endl;
     DynamicArray<Info*> result;
     
     for (int i = 0; i < columnAmount; ++i) {
@@ -236,7 +249,7 @@ bool Table::addRow(std::string input)
 
         result.append(new Info(type, val));
     }
-    std::cout << input << " HERE 3" << std::endl;
+    //std::cout << input << " HERE 3" << std::endl;
     Node* newNode = new Node(genNextId(), result, num);
 
     rows.append(newNode);
@@ -270,6 +283,146 @@ void Table::PrintRows(int amount)
         PrintRow(rows[i]);
     }
 
+}
+
+
+InfoType stringToInfoType(const std::string& str) {
+    if (str == "Int") return InfoType::Int;
+    if (str == "Double") return InfoType::Double;
+    if (str == "String") return InfoType::String;
+    if (str == "Date") return InfoType::Date;
+    if (str == "Id") return InfoType::Id;
+    if (str == "ManyInt") return InfoType::ManyInt;
+    if (str == "ManyId") return InfoType::ManyId;
+    return InfoType::None;
+}
+
+std::string infoTypeToString(InfoType type) {
+    switch (type) {
+    case InfoType::Int: return "Int";
+    case InfoType::Double: return "Double";
+    case InfoType::String: return "String";
+    case InfoType::Date: return "Date";
+    case InfoType::Id: return "Id";
+    case InfoType::ManyInt: return "ManyInt";
+    case InfoType::ManyId: return "ManyId";
+    default: return "None";
+    }
+}
+
+
+bool Table::saveToFile()
+{
+    std::string filename = tableName + ".txt";
+    std::ofstream file(filename);
+    if (!file.is_open()) {
+        std::cout << "Unable to open file: " << filename << std::endl;
+        return false;
+    }
+
+    file << num << ';' << tableName << ';' << columnAmount << ';' << curId << '\n';
+
+    for (int i = 0; i < columnAmount; i++) {
+        file << nameOfColumns[i] << ':' << infoTypeToString(columns[i]);
+        if (i != columnAmount - 1) {
+            file << ';';
+        }
+    }
+    file << '\n';
+
+    for (int i = 0; i < rows.size(); i++) {
+        file << rows[i]->id << ';';
+        for (int j = 0; j < columnAmount; j++) {
+            file << rows[i]->dat[j]->getUserInput() << ';';
+        }
+        file << '\n';
+    }
+
+    file.close();
+
+    return true;
+}
+
+bool Table::loadFromFile(std::string filename)
+{
+    std::ifstream file(filename);
+
+    if (!file.is_open()) {
+        std::cout << "Unable to open file: " << filename << std::endl;
+        return false;
+    }
+
+    std::string line;
+    if (!std::getline(file, line)) return false;
+
+    std::istringstream hstream(line);
+    std::string token;
+
+    std::getline(hstream, token, ';');
+
+    num = std::stoi(token);
+
+    std::getline(hstream, tableName, ';');
+
+    std::getline(hstream, token, ';');
+    columnAmount = std::stoi(token);
+
+    std::getline(hstream, token, ';');
+    curId = std::stoi(token);
+
+    nameOfColumns = new std::string[columnAmount];
+    columns = new InfoType[columnAmount];
+
+    if (!std::getline(file, line)) return false;
+    std::istringstream colStream(line);
+    int index = 0;
+
+    while (std::getline(colStream, token, ';') && index < columnAmount) {
+        size_t pos = token.find(':');
+        if (pos == std::string::npos) continue;
+
+        nameOfColumns[index] = token.substr(0, pos);
+        std::string typeStr = token.substr(pos + 1);
+        columns[index] = stringToInfoType(typeStr);
+        index++;
+    }
+
+    while (std::getline(file, line)) {
+        if (line.empty()) continue;
+
+        std::istringstream rstream(line);
+        std::string values[MAX_COLUMNS];
+        int valueCount = 0;
+
+        while (std::getline(rstream, token, ';')) {
+            values[valueCount++] = token;
+        }
+
+        if (valueCount != columnAmount + 1) {
+            std::cerr << "Error. Incorrect column amount at " << rows.size() << std::endl;
+            continue;
+        }
+
+        int rowId = std::stoi(values[0]);
+
+        DynamicArray<Info*> rowData;
+        for (int i = 0; i < columnAmount; i++) {
+            Info* info = new Info(columns[i], values[i + 1]);
+            rowData.append(info);
+        }
+
+        Node* node = new Node(rowId, rowData, num);
+        rows.append(node);
+        rowById.insert(rowId, node);
+    }
+
+    file.close();
+    return true;
+}
+
+Table::Table(std::string file)
+{
+    loadFromFile(file);
 }
 
 Node::Node(unsigned int d, DynamicArray<Info*> list, int table): id(d),  dat(list), tabN(table) {}

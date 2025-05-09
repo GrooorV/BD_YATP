@@ -127,12 +127,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BD.cpp" />
     <ClCompile Include="BD_YATP.cpp" />
+    <ClCompile Include="Checksum.cpp" />
     <ClCompile Include="Info.cpp" />
     <ClCompile Include="Table.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BD.h" />
+    <ClInclude Include="Checksum.h" />
     <ClInclude Include="DynamicArray.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="HashMap.h" />

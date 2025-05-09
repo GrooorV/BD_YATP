@@ -1,2 +1,3 @@
 #pragma once
-unsigned int ID_AMOUNT = 10000000;
+const unsigned int ID_AMOUNT = 10000000;
+const unsigned int MAX_COLUMNS = 100;
