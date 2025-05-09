@@ -15,6 +15,7 @@ Info::Info(InfoType t, const std::string& input) : type(t), userInput(input) {
         case InfoType::Date:
             data.s = new std::string(input);
             break;
+        case InfoType::ManyId:
         case InfoType::ManyInt: {
             data.vi = new DynamicArray<int>();
             size_t start = 0;
@@ -65,6 +66,11 @@ InfoType Info::getType() const {
 
 int Info::getInt() const {
     if (type == InfoType::Int || type == InfoType::Id) return data.i;
+    if (type == InfoType::Date) {
+    int year = std::stoi(data.s.substr(0, 4));
+    int month = std::stoi(data.s.substr(5, 2));
+    int day = std::stoi(data.s.substr(8, 2));
+    return year * 10000 + month * 100 + day;}
 }
 double Info::getDouble() const {
     if (type == InfoType::Double)return data.d;
