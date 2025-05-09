@@ -3,12 +3,12 @@
 
 Table::Table(int number)
 {
-    std::cout << "Enter a table name" << endl;
-    std::cin >> tableName;
     int userType = 0;
     bool usersRightInput = 0;
     num = number;
     curId = ID_AMOUNT + num;
+    std::cout << "Enter a table name: " << curId << endl;
+    getline(std::cin, tableName);
     std::cout << "How many columns must be in table?" << endl;
     while (!usersRightInput)
     {
@@ -18,41 +18,52 @@ Table::Table(int number)
         else
             usersRightInput = 1;
     }
-    usersRightInput = 0;
+    std::cin.ignore();
     std::cout << "1 - int, 2 - double, 3 - string, 4 - date, 5 - id, 6 - manyId, 7 - ManyInt." << endl;
+    nameOfColumns = new std::string[columnAmount];
     columns = new InfoType[columnAmount];
     for (int i = 0; i < columnAmount; i++)
     {
-        std::cout << "What is type of info is in the " << i + 1 << " column?" << endl;
-        std::cin >> userType;
-        switch (userType)
-        {
-        case 1:
-            columns[i] = InfoType::Int;
-            break;
-        case 2:
-            columns[i] = InfoType::Double;
-            break;
-        case 3:
-            columns[i] = InfoType::String;
-            break;
-        case 4:
-            columns[i] = InfoType::Date;
-            break;
-        case 5:
-            columns[i] = InfoType::Id;
-            break;
-        case 6:
-            columns[i] = InfoType::ManyId;
-            break;
-        case 7:
-            columns[i] = InfoType::ManyInt;
-            break;
-        default:
-            std::cout << "impossible type of info!" << endl;
-            break;
-        }
+        std::cout << "enter a name of the " << i + 1 << " column" << endl;
+        std::cin.ignore();
+        getline( std::cin, nameOfColumns[i] );
 
+        std::cout << "What is type of info in the " << i + 1 << " column?" << endl;
+        do {
+            usersRightInput = 0;
+            std::cin >> userType;
+            std::cin.ignore();
+            switch (userType)
+            {
+            case 1:
+                columns[i] = InfoType::Int;
+                break;
+            case 2:
+                columns[i] = InfoType::Double;
+                break;
+            case 3:
+                columns[i] = InfoType::String;
+                break;
+            case 4:
+                columns[i] = InfoType::Date;
+                break;
+            case 5:
+                columns[i] = InfoType::Id;
+                break;
+            case 6:
+                columns[i] = InfoType::ManyId;
+                break;
+            case 7:
+                columns[i] = InfoType::ManyInt;
+                break;
+            default:
+                std::cout << "impossible type of info! Try again." << endl;
+                usersRightInput = 1;
+                break;
+            }
+
+
+        } while (usersRightInput);
     }
     /*
     columns[0] = InfoType::Int;
