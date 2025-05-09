@@ -130,6 +130,7 @@
     <ClCompile Include="BD_YATP.cpp" />
     <ClCompile Include="Info.cpp" />
     <ClCompile Include="Table.cpp" />
+    <ClCompile Include="Testing.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BD.h" />
