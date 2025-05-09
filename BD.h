@@ -4,34 +4,33 @@
 #include "HashMap.h"
 #include "Table.h"
 #include "Info.h"
-
+#include "Globals.h"
 
 class Database
 {
 public:
-	Database()
-	{
-		tableID = 0;
-	}
 
-	~Database()
-	{
+	Database(std::string); // Если не найдёт бд - создаст, если найдёт - загрузит из файла
+	~Database();
 
-	}
+	void addTable();
 
-	//void someMethods() { };
-	void bootTableManually()//открытие таблицы
-	{
+	Table* findTable(int);
 
-	}
+	Node* findById(int);
 
-	void bootTableFromFile() //пока нет работы с файлами, здесь пусто
-	{
+	bool saveBDInfotoFile(); // сохраняет информацию о базе данных, не сохраняет каждую таблицу по отдельности
 
-	}
+	bool saveAllToFiles(); // сохраняет и информацию о базе данных и каждую таблицу по отдельности 
+
+	bool isLoaded();
 
 private:
 
-	Table* tables; //массив таблиц в бд, динамический масси в
+	bool isValid;
+	std::string name;
+	bool loadBDfromFile(std::string);
+
+	DynamicArray<Table*> tables; //массив таблиц в бд, динамический масси в
 	int tableID; // 
 };

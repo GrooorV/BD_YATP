@@ -33,16 +33,24 @@ public:
 
 	void PrintRows(int);
 
+	std::string getFileName();
+
 	bool saveToFile();
 
 	bool loadFromFile(std::string);
 	//void someMethods() { };
+
+	int getId();
+
+	bool isLoaded();
 
 private:
 
 	int num;
 	int curId;
 	int columnAmount;
+
+	bool isValid;
 	std::string tableName;
 	std::string* nameOfColumns; //названия столбцов
 	InfoType* columns; // типы столбцов
