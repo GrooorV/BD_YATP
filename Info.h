@@ -1,6 +1,6 @@
-﻿#pragma once
+#pragma once
 #include <string>
-#include <vector>
+#include "DynamicArray.h"
 
 enum class InfoType {
     Int,
@@ -22,10 +22,11 @@ private:
         int i;
         double d;
         std::string* s;
-        //сюды массив
+        DynamicArray<int>* vi;
+
         Data() {}
         ~Data() {}
-    } data; //сразу иницилизация
+    } data;
 
 public:
     Info(InfoType t, const std::string& input);
@@ -36,6 +37,7 @@ public:
     int getInt() const;
     double getDouble() const;
     const std::string& getString() const;
+    const DynamicArray<int>& getIntArray() const; // геттер для массива
 
     std::string getUserInput() const;
 };
