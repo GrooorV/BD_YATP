@@ -1,7 +1,9 @@
-﻿#pragma once
+#pragma once
 #include "Info.h"
 #include "HashMap.h"
 #include "DynamicArray.h"
+
+using namespace std;
 
 struct Node
 {
@@ -19,18 +21,9 @@ struct Node
 class Table
 {
 public:
-	Table()
-	{
-		// Только для теста
-		columns = new InfoType[4];
-		columns[0] = InfoType::Int;
-		columns[1] = InfoType::Int;
-		columns[2] = InfoType::Int;
-		columns[3] = InfoType::Int;
-		curId = 0;
-		num = 0;
-		columnAmount = 4;
-	}
+	Table(int number);
+
+	Table(); //вызов консруктора для чтения из файла, пока пустой
 
 	~Table()
 	{
