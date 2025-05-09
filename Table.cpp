@@ -1,103 +1,6 @@
 #include "Table.h"
 #include "Globals.h"
-
-Table::Table(int number)
-{
-    int userType = 0;
-    bool usersRightInput = 0;
-    num = number;
-    curId = ID_AMOUNT + num;
-    std::cout << "Enter a table name: " << curId << endl;
-    getline(std::cin, tableName);
-    std::cout << "How many columns must be in table?" << endl;
-    while (!usersRightInput)
-    {
-        std::cin >> columnAmount;
-        if (columnAmount <= 0)
-            std::cout << "impossible number of columns! Try again." << endl;
-        else
-            usersRightInput = 1;
-    }
-    std::cin.ignore();
-    std::cout << "1 - int, 2 - double, 3 - string, 4 - date, 5 - id, 6 - manyId, 7 - ManyInt." << endl;
-    nameOfColumns = new std::string[columnAmount];
-    columns = new InfoType[columnAmount];
-    for (int i = 0; i < columnAmount; i++)
-    {
-        std::cout << "enter a name of the " << i + 1 << " column" << endl;
-        std::cin.ignore();
-        getline( std::cin, nameOfColumns[i] );
-
-        std::cout << "What is type of info in the " << i + 1 << " column?" << endl;
-        do {
-            usersRightInput = 0;
-            std::cin >> userType;
-            std::cin.ignore();
-            switch (userType)
-            {
-            case 1:
-                columns[i] = InfoType::Int;
-                break;
-            case 2:
-                columns[i] = InfoType::Double;
-                break;
-            case 3:
-                columns[i] = InfoType::String;
-                break;
-            case 4:
-                columns[i] = InfoType::Date;
-                break;
-            case 5:
-                columns[i] = InfoType::Id;
-                break;
-            case 6:
-                columns[i] = InfoType::ManyId;
-                break;
-            case 7:
-                columns[i] = InfoType::ManyInt;
-                break;
-            default:
-                std::cout << "impossible type of info! Try again." << endl;
-                usersRightInput = 1;
-                break;
-            }
-
-
-        } while (usersRightInput);
-    }
-    /*
-    columns[0] = InfoType::Int;
-    columns[1] = InfoType::Int;
-    columns[2] = InfoType::Int;
-    columns[3] = InfoType::Int;
-    curId = 0;
-    num = 0;
-    columnAmount = 4;
-    */
-}
-
-Table::Table()//вызов консруктора для чтения из файла, пока пустой
-{
-
-}
-
-unsigned int Table::genNextId()
-{
-    if ((curId + 1) / ID_AMOUNT != num) {
-        std::cout << "OVERFLOW??" << std::endl; // нужно додумать 
-        return 0;
-    }
-    return ++curId;
-}
-
-void Table::PrintRow(Node* row)
-{
-    for (int i = 0; i < columnAmount; i++) {
-        std::cout << row->dat[i]->getUserInput() << " ";
-    }
-    std::cout << std::endl;
-}
-
+#include <sstream>
 
 
 bool isValidInt(const std::string& s) {
@@ -162,6 +65,120 @@ bool isValidList(const std::string& s, char open, char close) {
 
     return !expectingNumber;
 }
+
+Table::Table(int number)
+{
+    std::string token;
+    int userType = 0;
+    bool usersRightInput = 0;
+    num = number;
+    curId = ID_AMOUNT + num;
+    std::cout << "Enter a table name: " << curId << endl;
+    std::getline(std::cin, tableName);
+    std::cout << "How many columns must be in table?" << endl;
+    while (!usersRightInput)
+    {
+        std::getline(std::cin, token);
+        if (!isValidInt(token))
+            std::cout << "not a valid int number. Try again." << endl;
+        else
+        {
+            if (std::stoi(token) <= 0)
+                std::cout << "not a valid positive number. Try again." << endl;
+            else
+            {
+                columnAmount = std::stoi(token);
+                usersRightInput = 1;
+            }
+        }
+    }
+    std::cout << "1 - int, 2 - double, 3 - string, 4 - date, 5 - id, 6 - manyId, 7 - ManyInt." << endl;
+    nameOfColumns = new std::string[columnAmount];
+    columns = new InfoType[columnAmount];
+    for (int i = 0; i < columnAmount; i++)
+    {
+        std::cout << "enter a name of the " << i + 1 << " column" << endl;
+        getline( std::cin, nameOfColumns[i] );
+
+        std::cout << "What is type of info in the " << i + 1 << " column?" << endl;
+        do {
+            usersRightInput = 0;
+            std::getline(std::cin, token);
+            if (!isValidInt(token))
+            {
+                usersRightInput = 1;
+                std::cout << "not a valid int number. Try again." << endl;
+            }
+            else
+            {
+                userType = std::stoi(token);
+                switch (userType)
+                {
+                case 1:
+                    columns[i] = InfoType::Int;
+                    break;
+                case 2:
+                    columns[i] = InfoType::Double;
+                    break;
+                case 3:
+                    columns[i] = InfoType::String;
+                    break;
+                case 4:
+                    columns[i] = InfoType::Date;
+                    break;
+                case 5:
+                    columns[i] = InfoType::Id;
+                    break;
+                case 6:
+                    columns[i] = InfoType::ManyId;
+                    break;
+                case 7:
+                    columns[i] = InfoType::ManyInt;
+                    break;
+                default:
+                    std::cout << "impossible type of info! Try again." << endl;
+                    usersRightInput = 1;
+                    break;
+                }
+
+            }
+
+
+        } while (usersRightInput);
+    }
+    /*
+    columns[0] = InfoType::Int;
+    columns[1] = InfoType::Int;
+    columns[2] = InfoType::Int;
+    columns[3] = InfoType::Int;
+    curId = 0;
+    num = 0;
+    columnAmount = 4;
+    */
+}
+
+Table::Table()//вызов консруктора для чтения из файла, пока пустой
+{
+
+}
+
+unsigned int Table::genNextId()
+{
+    if ((curId + 1) / ID_AMOUNT != num) {
+        std::cout << "OVERFLOW??" << std::endl; // нужно додумать 
+        return 0;
+    }
+    return ++curId;
+}
+
+void Table::PrintRow(Node* row)
+{
+    for (int i = 0; i < columnAmount; i++) {
+        std::cout << row->dat[i]->getUserInput() << " ";
+    }
+    std::cout << std::endl;
+}
+
 
 bool Table::addRow(std::string input)
 {
@@ -230,6 +247,14 @@ bool Table::addRow(std::string input)
 
 void Table::PrintAllRows()
 {
+    /*
+    std::cout << tableName << std::endl;
+    for (int i = 0; i < columnAmount; i++)
+    {
+        std::cout << nameOfColumns[i] << "||";
+    }
+    std::cout << std::endl;
+    */
     for (int i = 0; i < rows.size(); i++) {
         PrintRow(rows[i]);
     }
