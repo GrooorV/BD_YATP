@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <iostream>
 #include "DynamicArray.h"
 #include "HashMap.h"
@@ -11,7 +11,7 @@ class Database
 public:
 	Database()
 	{
-
+		tableID = 0;
 	}
 
 	~Database()
@@ -20,8 +20,18 @@ public:
 	}
 
 	//void someMethods() { };
+	void bootTableManually()//открытие таблицы
+	{
+
+	}
+
+	void bootTableFromFile() //пока нет работы с файлами, здесь пусто
+	{
+
+	}
 
 private:
 
 	Table* tables; //массив таблиц в бд, динамический масси в
+	int tableID; // 
 };
