@@ -126,6 +126,7 @@ unsigned int Table::genNextId()
 
 void Table::PrintRow(Node* row)
 {
+    std::cout << row->id << " ";
     for (int i = 0; i < columnAmount; i++) {
         std::cout << row->dat[i]->getUserInput() << " ";
     }
@@ -446,4 +447,45 @@ bool Table::deleteFiles() {
     }
     std::filesystem::remove(getFileName() + ".hash");
 
+}
+
+bool Table::deleteRow(int id) {
+    Node* node = findRow(id);
+    if (!node) {
+        return false;
+    }
+
+    rowById.erase(id);
+    rows.removeValue(node);
+}
+
+Node* Table::findRow(int id) {
+    for (int i = 0; i < rows.size(); i++) {
+        if (rows[i]->id == id) {
+            return rows[i];
+        }
+    }
+    return nullptr;
+}
+
+DynamicArray<Node*> Table::findInRows(std::string subs) {
+    DynamicArray<Node*> nodes;
+
+    for (int i = 0; i < rows.size(); i++) {
+        for (int j = 0; j < rows[i]->dat.size(); j++) {
+            if (rows[i]->dat[j]->getUserInput().find(subs) != std::string::npos) {
+                nodes.append(rows[i]);
+            }
+        }
+    }
+
+    return nodes;
+}
+
+
+bool Table::printRow(Node* node) {
+    if (!findRow(node->id)) return false;
+
+    PrintRow(node);
+    return true;
 }

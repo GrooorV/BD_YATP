@@ -29,6 +29,12 @@ public:
 
 	bool addRow(std::string);
 
+	bool deleteRow(int);
+
+	Node* findRow(int);
+
+	DynamicArray<Node*> findInRows(std::string);
+
 	void PrintAllRows();
 
 	void PrintRows(int);
@@ -46,6 +52,8 @@ public:
 	int getId();
 
 	bool isLoaded();
+
+	bool printRow(Node*);
 
 private:
 
