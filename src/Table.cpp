@@ -86,15 +86,6 @@ Table::Table(int number)
         } while (usersRightInput);
     }
     isValid = true;
-    /*
-    columns[0] = InfoType::Int;
-    columns[1] = InfoType::Int;
-    columns[2] = InfoType::Int;
-    columns[3] = InfoType::Int;
-    curId = 0;
-    num = 0;
-    columnAmount = 4;
-    */
 }
 
 /*Table::Table()//вызов консруктора для чтения из файла, пока пустой

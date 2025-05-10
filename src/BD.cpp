@@ -45,7 +45,7 @@ bool Database::saveBDInfotoFile()
 	std::string filename = "BD_" + name + ".txt";
 	std::ofstream file(filename);
 	if (!file.is_open()) {
-		std::cout << "Unable to open file: " << filename << std::endl;
+		std::cout << "Unable to open file: " << filename << ". Creating completely new database;" << std::endl;
 		return false;
 	}
 
