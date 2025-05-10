@@ -97,8 +97,8 @@ StyleCopReport.xml
 *.pidb
 *.svclog
 *.scc
-*.vcproj
-*.vcproj.filters
+*.vcxproj
+*.vcxproj.filters
 *.sln
 CMakeCache.txt
 CMakeFiles/
