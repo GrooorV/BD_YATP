@@ -442,11 +442,10 @@ bool Table::sortBy(std::string name) {
 bool Table::deleteFiles() {
 
     if (!std::filesystem::remove(getFileName())) {
-        std::cerr << "Error deleting file" << std::endl;
         return false;
     }
     std::filesystem::remove(getFileName() + ".hash");
-
+    return true;
 }
 
 bool Table::deleteRow(int id) {

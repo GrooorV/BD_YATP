@@ -141,11 +141,11 @@ bool Database::addTable(std::string filename) {
 bool Database::deleteTable(int id) {
 	Table* table = findTable(id);
 
-	if (!findTable(id)) return false;
+	if (!table) return false;
 
 
 	table->deleteFiles();
 	tables.removeValue(table);
-
-	
+	delete table;
+	return true;
 }
