@@ -95,6 +95,12 @@ public:
         return data[index];
     }
 
+    const T& operator[](unsigned int index) const {
+        if (index >= length) {
+            throw std::out_of_range("DynamicArray: Index out of range (const)");
+        }
+        return data[index];
+    }
 
     DynamicArray& operator=(const DynamicArray& other) {
         if (this == &other) return *this;

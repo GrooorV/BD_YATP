@@ -88,12 +88,6 @@ Table::Table(int number)
     isValid = true;
 }
 
-/*Table::Table()//вызов консруктора для чтения из файла, пока пустой
-{
-
-}
-*/
-
 Table::~Table()
 {
     for (int i = 0; i < rows.size(); i++) {
@@ -115,14 +109,6 @@ unsigned int Table::genNextId()
     return ++curId;
 }
 
-void Table::PrintRow(Node* row)
-{
-    std::cout << row->id << " ";
-    for (int i = 0; i < columnAmount; i++) {
-        std::cout << row->dat[i]->getUserInput() << " ";
-    }
-    std::cout << std::endl;
-}
 
 
 bool Table::addRow(std::string input)
@@ -478,4 +464,116 @@ bool Table::printRow(Node* node) {
 
     PrintRow(node);
     return true;
+}
+
+
+
+// Методы для красивого вывода
+
+int getColumnWidth(InfoType type) {
+    switch (type) {
+    case InfoType::Int: 
+        return INT_COLUMN_WIDTH;
+    case InfoType::Id:         
+        return ID_COLUMN_WIDTH;
+    case InfoType::Double:
+        return DOUBLE_COLUMN_WIDTH;
+    case InfoType::Date:
+        return DATE_COLUMN_WIDTH;
+    case InfoType::String:
+        return STRING_COLUMN_WIDTH;
+    case InfoType::ManyInt: 
+    case InfoType::ManyId:
+        return MANY_COLUMN_WIDTH;
+    default:
+        return DEFAULT_COLUMN_WIDTH;
+    }
+}
+
+DynamicArray<std::string> wrapText(const std::string& text, int width) {
+    DynamicArray<std::string> lines;
+
+    for (int i = 0; i < text.size(); i += width) {
+        lines.append(text.substr(i, width));
+    }
+    return lines;
+}
+
+void printDivider(InfoType* columns, int amount) {
+    std::cout << "+" << std::string(ID_COLUMN_WIDTH, '-') << "+";
+    for (int i = 0; i < amount; i++) {
+        int width = getColumnWidth(columns[i]);
+        std::cout << std::string(width, '-') << "+";
+    }
+    std::cout << '\n';
+}
+
+/*
+void printHeaders(std::string* columnNames, InfoType* columnTypes, int amount) {
+    printDivider(columnTypes, amount);
+    std::cout << "|";
+    for (int i = 0; i < amount; i++) {
+        int width = getColumnWidth(columnTypes[i]);
+        std::cout << std::setw(width) << std::left << columnNames[i] << "|";
+    }
+    std::cout << '\n';
+    printDivider(columnTypes, amount);
+}
+*/
+
+
+void Table::printColumnNames() {
+    printDivider(columns, columnAmount);
+
+    std::cout << "|" << std::setw(ID_COLUMN_WIDTH) << std::left << "ID" << "|";
+    for (int i = 0; i < columnAmount; i++) {
+        int width = getColumnWidth(columns[i]);
+        std::cout << std::setw(width) << std::left << nameOfColumns[i] << "|";
+    }
+    std::cout << '\n';
+
+    printDivider(columns, columnAmount);
+}
+
+
+void Table::PrintRow(Node* row)
+{
+    DynamicArray<DynamicArray<std::string>> wrappedColumns;
+    int maxHeight = 1;
+
+    for (int i = 0; i < columnAmount; i++) {
+        int width = getColumnWidth(columns[i]);
+        DynamicArray<std::string> lines = wrapText(row->dat[i]->getUserInput(), width);
+
+        if (maxHeight < lines.size()) {
+            maxHeight = lines.size();
+        }
+        wrappedColumns.append(std::move(lines));
+    }
+
+    for (int line = 0; line < maxHeight; line++) {
+        std::cout << "|";
+        if (line == 0) {
+            std::cout << std::setw(ID_COLUMN_WIDTH) << std::left << row->id;
+        }
+        else {
+            std::cout << std::setw(ID_COLUMN_WIDTH) << " ";
+        }
+        std::cout << "|";
+
+        for (int column = 0; column < columnAmount; column++) {
+            int width = getColumnWidth(columns[column]);
+
+            const auto& lines = wrappedColumns[column];
+            if (line < lines.size()) {
+                std::cout << std::setw(width) << std::left << lines[line];
+            }
+            else {
+                std::cout << std::setw(width) << " ";
+            }
+            std::cout << "|";
+        }
+        std::cout << '\n';
+    }
+    printDivider(columns, columnAmount);
 }

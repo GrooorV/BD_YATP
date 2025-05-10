@@ -39,6 +39,8 @@ public:
 
 	void PrintRows(int);
 
+	void printColumnNames();
+
 	std::string getFileName();
 
 	bool saveToFile();

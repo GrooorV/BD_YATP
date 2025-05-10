@@ -235,21 +235,23 @@ private:
 
 
 int main() {
+    /*
     std::cout << "//124/" << std::endl;
     ConsoleApplication c;
     c.run();
+    */
 
 
 
 
 
-
-
+    
     Database BD = Database("Test");
 
 
     
     if (!BD.isLoaded()) std::cout << "PLOHO";
+    
 
     //Проверка создания
     
@@ -263,6 +265,7 @@ Tablichka
 3
 3
     */
+    
     BD.addNewTable();
 
     Table* table = BD.findTable(1);
@@ -274,6 +277,7 @@ Tablichka
 
     std::cout << "Test sorting" << std::endl;
     table->sortBy("1");
+    table->printColumnNames();
     table->PrintAllRows();
     std::cout << std::endl;
 
@@ -307,7 +311,7 @@ Tablichka
 
     BD.saveAllToFiles();
     BD.deleteTable(1);
-
+    
     //Проверка если уже есть
     
     /*
