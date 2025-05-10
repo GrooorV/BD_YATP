@@ -16,7 +16,7 @@ int main() {
 
     //Проверка создания
     
-    BD.addTable();
+    BD.addNewTable();
 
     Table* table = BD.findTable(1);
 
