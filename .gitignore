@@ -97,6 +97,12 @@ StyleCopReport.xml
 *.pidb
 *.svclog
 *.scc
+*.vcproj
+*.vcproj.filters
+*.sln
+CMakeCache.txt
+CMakeFiles/
+
 
 # Chutzpah Test files
 _Chutzpah*

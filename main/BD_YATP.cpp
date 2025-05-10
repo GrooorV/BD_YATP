@@ -15,7 +15,7 @@ int main() {
     if (!BD.isLoaded()) std::cout << "PLOHO";
 
     //Проверка создания
-    /*
+    
     BD.addTable();
 
     Table* table = BD.findTable(1);
@@ -26,7 +26,7 @@ int main() {
 
     table->PrintAllRows();
     BD.saveAllToFiles();
-    */
+    
 
     //Проверка если уже есть
     
