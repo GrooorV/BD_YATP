@@ -6,7 +6,7 @@
 
 
 int main() {
-    std::cout << "///" << std::endl;
+    std::cout << "//124/" << std::endl;
   
     Database BD = Database("Test");
 

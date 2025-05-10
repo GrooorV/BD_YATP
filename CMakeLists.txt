@@ -3,6 +3,9 @@ project(BD_YATP)
 
 set(CMAKE_CXX_STANDARD 17)
 
+
+file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/generated_files)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/generated_files)
 # Include directories
 include_directories(include/utils)
 include_directories(include/BD_YATP)
