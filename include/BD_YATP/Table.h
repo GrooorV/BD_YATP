@@ -41,6 +41,8 @@ public:
 	
 	bool sortBy(std::string);
 
+	bool deleteFiles();
+
 	int getId();
 
 	bool isLoaded();

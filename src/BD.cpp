@@ -136,3 +136,16 @@ bool Database::addTable(std::string filename) {
 	tables.append(newTable);
 	return true;
 }
+
+
+bool Database::deleteTable(int id) {
+	Table* table = findTable(id);
+
+	if (!findTable(id)) return false;
+
+
+	table->deleteFiles();
+	tables.removeValue(table);
+
+	
+}

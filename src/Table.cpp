@@ -2,6 +2,7 @@
 #include "Globals.h"
 #include <sstream>
 #include <fstream>
+#include <filesystem>
 #include "Validators.h"
 
 Table::Table(int number)
@@ -434,4 +435,15 @@ bool Table::sortBy(std::string name) {
         return false;
     }
     return true;
+}
+
+
+bool Table::deleteFiles() {
+
+    if (!std::filesystem::remove(getFileName())) {
+        std::cerr << "Error deleting file" << std::endl;
+        return false;
+    }
+    std::filesystem::remove(getFileName() + ".hash");
+
 }

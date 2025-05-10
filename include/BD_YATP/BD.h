@@ -21,6 +21,8 @@ public:
 
 	Table* findTable(int);
 
+	bool deleteTable(int);
+
 	Node* findById(int);
 
 	bool saveBDInfotoFile(); // сохраняет информацию о базе данных, не сохраняет каждую таблицу по отдельности

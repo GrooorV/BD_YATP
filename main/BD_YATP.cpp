@@ -35,6 +35,8 @@ int main() {
     BD.saveAllToFiles();
     std::cout << std::endl;
 
+    BD.deleteTable(1);
+
     //Проверка если уже есть
     
     /*
