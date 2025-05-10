@@ -13,7 +13,11 @@ public:
 	Database(std::string); // Если не найдёт бд - создаст, если найдёт - загрузит из файла
 	~Database();
 
-	void addTable();
+	void addNewTable();
+
+	bool addTable(std::string);
+	
+	bool safeAddTable(std::string);
 
 	Table* findTable(int);
 

@@ -2,6 +2,7 @@
 #include <fstream>
 #include "BD.h"
 #include "Validators.h"
+#include "Checksum.h"
 
 Database::Database(std::string bname) {
 	std::string filename = "BD_" + bname + ".txt";
@@ -21,7 +22,7 @@ Database::~Database()
 	}
 }
 
-void Database::addTable()
+void Database::addNewTable()
 {
 	tables.append(new Table(++tableID));
 }
@@ -100,4 +101,38 @@ bool Database::loadBDfromFile(std::string bname)
 }
 
 
+bool Database::safeAddTable(std::string filename) {
+	if (!verifyChecksum(filename)) {
+		return false;
+	}
 
+	Table* newTable = new Table(filename);
+	if (!newTable->isLoaded()) {
+		delete newTable;
+		return false;
+	}
+	for (int i = 0; i < tables.size(); i++) {
+		if (tables[i]->getId() == newTable->getId()) {
+			std::cout << "Table with this ID already exists" << std::endl;
+			return false;
+		}
+	}
+	if (tableID < newTable->getId()) {
+		tableID = newTable->getId();
+	}
+
+	tables.append(newTable);
+	return true;
+
+}
+
+bool Database::addTable(std::string filename) {
+	Table* newTable = new Table(filename);
+
+	if (!newTable->isLoaded()) {
+		delete newTable;
+		return false;
+	}
+	tables.append(newTable);
+	return true;
+}
