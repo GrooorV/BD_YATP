@@ -391,3 +391,47 @@ Node::~Node()
         delete dat[i]; 
     }
 }
+
+
+bool Table::sortBy(std::string name) {
+    int columnNum = -1;
+    
+    for (int i = 0; i < columnAmount; i++) {
+        if (nameOfColumns[i] == name) {
+            columnNum = i;
+        }
+    }
+    if (columnNum == -1) {
+        std::cout << "Couldn't find a column with this name" << std::endl;
+        return false;
+    }
+
+
+    switch (columns[columnNum]) {
+    case InfoType::Int:
+    case InfoType::Id: {
+        auto compare = [columnNum](Node* a, Node* b) {return a->dat[columnNum]->getInt() < b->dat[columnNum]->getInt(); };
+        rows.sort(compare);
+        break;
+    }
+    case InfoType::Double: {
+        auto compare = [columnNum](Node* a, Node* b) {return a->dat[columnNum]->getDouble() < b->dat[columnNum]->getDouble(); };
+        rows.sort(compare);
+        break;
+    }
+    case InfoType::Date: {
+        auto compare = [columnNum](Node* a, Node* b) {return a->dat[columnNum]->getInt() < b->dat[columnNum]->getInt(); };
+        rows.sort(compare);
+        break;
+    }
+    case InfoType::String: {
+        auto compare = [columnNum](Node* a, Node* b) {return a->dat[columnNum]->getString() < b->dat[columnNum]->getString(); };
+        rows.sort(compare);
+        break;
+    }
+    default:
+        std::cout << "Unsortable type" << std::endl;
+        return false;
+    }
+    return true;
+}

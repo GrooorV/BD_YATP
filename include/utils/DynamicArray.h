@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <iostream>
 #include <stdexcept> 
+#include <utility> 
 
 template<typename T>
 void swap(T& a, T& b) {
@@ -37,7 +38,7 @@ private:
             while (data[i] < pivot) i++;
             while (data[j] > pivot) j--;
             if (i <= j) {
-                swap(data[i], data[j]);
+                std::swap(data[i], data[j]);
                 i++;
                 j--;
             }
@@ -58,7 +59,7 @@ private:
             while (comp(data[i], pivot)) i++;
             while (comp(pivot, data[j])) j--;
             if (i <= j) {
-                swap(data[i], data[j]);
+                std::swap(data[i], data[j]);
                 i++;
                 j--;
             }

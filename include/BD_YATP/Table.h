@@ -38,7 +38,8 @@ public:
 	bool saveToFile();
 
 	bool loadFromFile(std::string);
-	//void someMethods() { };
+	
+	bool sortBy(std::string);
 
 	int getId();
 
