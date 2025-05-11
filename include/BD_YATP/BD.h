@@ -29,6 +29,8 @@ public:
 
 	bool saveAllToFiles(); // сохраняет и информацию о базе данных и каждую таблицу по отдельности 
 
+	void printTables();
+
 	bool isLoaded();
 
 private:

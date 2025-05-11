@@ -53,6 +53,8 @@ public:
 
 	int getId();
 
+	std::string getName();
+
 	bool isLoaded();
 
 	bool printRow(Node*);

@@ -467,7 +467,9 @@ bool Table::printRow(Node* node) {
     return true;
 }
 
-
+std::string Table::getName() {
+    return tableName;
+}
 
 // Методы для красивого вывода
 

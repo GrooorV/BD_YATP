@@ -149,3 +149,22 @@ bool Database::deleteTable(int id) {
 	delete table;
 	return true;
 }
+
+void Database::printTables() {
+	for (int i = 0; i < tables.size(); i++) {
+		std::cout << tables[i]->getId() << " " << tables[i]->getName() << '\n';
+	}
+}
+
+
+
+Node* Database::findById(int id) {
+	int tableNum = id / ID_AMOUNT;
+
+	Table* table = findTable(tableNum);
+
+	if (!table) return nullptr;
+
+	return table->findRow(id);
+	
+}

@@ -487,7 +487,7 @@ int main() {
 
 
 
-    
+    /*
     Database BD = Database("Test");
 
 
@@ -507,7 +507,7 @@ Tablichka
 3
 3
     */
-    
+    /*
     BD.addNewTable();
 
     Table* table = BD.findTable(1);
