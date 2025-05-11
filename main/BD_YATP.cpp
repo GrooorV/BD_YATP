@@ -42,10 +42,10 @@ private:
         std::stringstream ss(command);
         std::string action;
         ss >> action;
+        //action = toLower(action);
 
         if (action.empty()) return;
         if (action.length() == 0) return;
-        if (action[0] == '#') return;
 
         switch (action[0]) {
         case 'B':
