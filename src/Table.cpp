@@ -132,17 +132,14 @@ unsigned int Table::genNextId()
     return ++curId;
 }
 
-
 std::string Table::getFileName()
 {
     return "TABLE_" + tableName + ".txt";
 }
 
-
 std::string Table::getName() {
     return tableName;
 }
-
 
 int Table::getId()
 {
@@ -158,6 +155,7 @@ bool Table::isLoaded()
 
 
 
+// Методы для работы со строками таблицы 
 
 /* Проверяет распаршенный на части текст на соответствие типу данных, если не подходит - false */
 bool isValidPart(const std::string& val, InfoType type) { 
@@ -186,7 +184,6 @@ bool isValidPart(const std::string& val, InfoType type) {
     }
     return true;
 }
-
 
 /* Парсит строку от пользователя в массив result (этот массив сразу в node кладётся*/
 bool Table::parseInfo(DynamicArray<Info*>& result, std::string input) {
@@ -224,7 +221,6 @@ bool Table::parseInfo(DynamicArray<Info*>& result, std::string input) {
     return true;
 }
 
-
 /* Добавляет НОВУЮ строку в таблицу. Парсит, создаёт ноду */
 bool Table::addRow(std::string input)
 {
@@ -237,7 +233,6 @@ bool Table::addRow(std::string input)
 
     return true;
 }
-
 
 /* Редактирует строку, заменяя её на полностью новую */
 bool Table::editRow(int id, std::string input) {
@@ -256,7 +251,6 @@ bool Table::editRow(int id, std::string input) {
     rowById.erase(id);
     rowById.insert(id, editedNode);
 }
-
 
 /* Редактирует строку, изменяя только в определённой column */
 bool Table::editRowColumn(int id, std::string column, std::string input) {
@@ -279,7 +273,6 @@ bool Table::editRowColumn(int id, std::string column, std::string input) {
     return false;
 }
 
-
 bool Table::deleteRow(int id) {
     Node* node = findRow(id);
     if (!node) {
@@ -291,6 +284,72 @@ bool Table::deleteRow(int id) {
     delete node;
 }
 
+bool Table::sortBy(std::string name) {
+    int columnNum = -1;
+
+    for (int i = 0; i < columnAmount; i++) {
+        if (nameOfColumns[i] == name) {
+            columnNum = i;
+        }
+    }
+    if (columnNum == -1) {
+        std::cout << "Couldn't find a column with this name" << std::endl;
+        return false;
+    }
+
+
+    switch (columns[columnNum]) {
+    case InfoType::Int:
+    case InfoType::Id: {
+        auto compare = [columnNum](Node* a, Node* b) {return a->dat[columnNum]->getInt() < b->dat[columnNum]->getInt(); };
+        rows.sort(compare);
+        break;
+    }
+    case InfoType::Double: {
+        auto compare = [columnNum](Node* a, Node* b) {return a->dat[columnNum]->getDouble() < b->dat[columnNum]->getDouble(); };
+        rows.sort(compare);
+        break;
+    }
+    case InfoType::Date: {
+        auto compare = [columnNum](Node* a, Node* b) {return a->dat[columnNum]->getInt() < b->dat[columnNum]->getInt(); };
+        rows.sort(compare);
+        break;
+    }
+    case InfoType::String: {
+        auto compare = [columnNum](Node* a, Node* b) {return a->dat[columnNum]->getString() < b->dat[columnNum]->getString(); };
+        rows.sort(compare);
+        break;
+    }
+    default:
+        std::cout << "Unsortable type" << std::endl;
+        return false;
+    }
+    return true;
+}
+
+Node* Table::findRow(int id) {
+    return rowById.find(id);
+}
+
+DynamicArray<Node*> Table::findInRows(std::string subs) {
+    DynamicArray<Node*> nodes;
+
+    for (int i = 0; i < rows.size(); i++) {
+        for (int j = 0; j < rows[i]->dat.size(); j++) {
+            if (rows[i]->dat[j]->getUserInput().find(subs) != std::string::npos) {
+                nodes.append(rows[i]);
+                break;
+            }
+        }
+    }
+
+    return nodes;
+}
+
+
+
+
+// Методы работы с файлами
 
 InfoType stringToInfoType(const std::string& str) {
     if (str == "Int") return InfoType::Int;
@@ -315,7 +374,6 @@ std::string infoTypeToString(InfoType type) {
     default: return "None";
     }
 }
-
 
 bool Table::saveToFile()
 {
@@ -426,7 +484,6 @@ bool Table::loadFromFile(std::string filename)
     return true;
 }
 
-
 bool Table::deleteFiles() {
 
     if (!std::filesystem::remove(getFileName())) {
@@ -434,69 +491,6 @@ bool Table::deleteFiles() {
     }
     std::filesystem::remove(getFileName() + ".hash");
     return true;
-}
-
-
-bool Table::sortBy(std::string name) {
-    int columnNum = -1;
-    
-    for (int i = 0; i < columnAmount; i++) {
-        if (nameOfColumns[i] == name) {
-            columnNum = i;
-        }
-    }
-    if (columnNum == -1) {
-        std::cout << "Couldn't find a column with this name" << std::endl;
-        return false;
-    }
-
-
-    switch (columns[columnNum]) {
-    case InfoType::Int:
-    case InfoType::Id: {
-        auto compare = [columnNum](Node* a, Node* b) {return a->dat[columnNum]->getInt() < b->dat[columnNum]->getInt(); };
-        rows.sort(compare);
-        break;
-    }
-    case InfoType::Double: {
-        auto compare = [columnNum](Node* a, Node* b) {return a->dat[columnNum]->getDouble() < b->dat[columnNum]->getDouble(); };
-        rows.sort(compare);
-        break;
-    }
-    case InfoType::Date: {
-        auto compare = [columnNum](Node* a, Node* b) {return a->dat[columnNum]->getInt() < b->dat[columnNum]->getInt(); };
-        rows.sort(compare);
-        break;
-    }
-    case InfoType::String: {
-        auto compare = [columnNum](Node* a, Node* b) {return a->dat[columnNum]->getString() < b->dat[columnNum]->getString(); };
-        rows.sort(compare);
-        break;
-    }
-    default:
-        std::cout << "Unsortable type" << std::endl;
-        return false;
-    }
-    return true;
-}
-
-Node* Table::findRow(int id) {
-    return rowById.find(id);
-}
-
-DynamicArray<Node*> Table::findInRows(std::string subs) {
-    DynamicArray<Node*> nodes;
-
-    for (int i = 0; i < rows.size(); i++) {
-        for (int j = 0; j < rows[i]->dat.size(); j++) {
-            if (rows[i]->dat[j]->getUserInput().find(subs) != std::string::npos) {
-                nodes.append(rows[i]);
-                break;
-            }
-        }
-    }
-
-    return nodes;
 }
 
 
