@@ -280,6 +280,18 @@ bool Table::editRowColumn(int id, std::string column, std::string input) {
 }
 
 
+bool Table::deleteRow(int id) {
+    Node* node = findRow(id);
+    if (!node) {
+        return false;
+    }
+
+    rowById.erase(id);
+    rows.removeValue(node);
+    delete node;
+}
+
+
 InfoType stringToInfoType(const std::string& str) {
     if (str == "Int") return InfoType::Int;
     if (str == "Double") return InfoType::Double;
@@ -466,17 +478,6 @@ bool Table::sortBy(std::string name) {
         return false;
     }
     return true;
-}
-
-
-bool Table::deleteRow(int id) {
-    Node* node = findRow(id);
-    if (!node) {
-        return false;
-    }
-
-    rowById.erase(id);
-    rows.removeValue(node);
 }
 
 Node* Table::findRow(int id) {
