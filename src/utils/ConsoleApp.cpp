@@ -481,7 +481,6 @@ void ConsoleApplication::proccessTable(std::stringstream& ss)
                                 ss >> rowID;
                                 ss >> column;
                                 ss >> element;
-                                std::cout << rowID << " " << column << " " << element << endl;
                                 if (isValidInt(rowID))
                                 {
                                     if (std::stoi(rowID) > 0)
