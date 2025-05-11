@@ -11,7 +11,7 @@ Table::Table(int number)
     int userType = 0;
     bool usersRightInput = 0;
     num = number;
-    curId = ID_AMOUNT + num;
+    curId = ID_AMOUNT * num;
     std::cout << "Enter a table name: " << curId << endl;
     std::getline(std::cin, tableName);
     std::cout << "How many columns must be in table?" << endl;
@@ -460,6 +460,7 @@ DynamicArray<Node*> Table::findInRows(std::string subs) {
 
 
 bool Table::printRow(Node* node) {
+    if (!node) return false;
     if (!findRow(node->id)) return false;
 
     PrintRow(node);
