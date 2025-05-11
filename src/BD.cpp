@@ -147,6 +147,7 @@ bool Database::deleteTable(int id) {
 	table->deleteFiles();
 	tables.removeValue(table);
 	delete table;
+	saveBDInfotoFile();
 	return true;
 }
 
