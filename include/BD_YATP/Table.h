@@ -31,6 +31,10 @@ public:
 
 	bool deleteRow(int);
 
+	bool editRow(int, std::string);
+
+	bool editRowColumn(int, std::string, std::string);
+
 	Node* findRow(int);
 
 	DynamicArray<Node*> findInRows(std::string);
@@ -77,4 +81,6 @@ private:
 	unsigned int genNextId();
 
 	void PrintRow(Node*);
+
+	bool parseInfo(DynamicArray<Info*>&, std::string);
 };

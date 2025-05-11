@@ -79,12 +79,12 @@ public:
         return false;
     }
 
-    V* find(const K& key) {
+    V find(const K& key) {
         unsigned int indx = hash(key);
         unsigned int startIndex = indx;
         while (table[indx].occupied) {
             if (table[indx].key == key) {
-                return &table[indx].value;
+                return table[indx].value;
             }
             indx = (indx + 1) % capacity;
             if (indx == startIndex) break;
@@ -92,12 +92,12 @@ public:
         return nullptr;
     }
 
-    const V* find(const K& key) const {
+    const V find(const K& key) const {
         unsigned int indx = hash(key);
         unsigned int startIndex = indx;
         while (table[indx].occupied) {
             if (table[indx].key == key) {
-                return &table[indx].value;
+                return table[indx].value;
             }
             indx = (indx + 1) % capacity;
             if (indx == startIndex) break;

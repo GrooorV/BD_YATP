@@ -109,10 +109,34 @@ unsigned int Table::genNextId()
     return ++curId;
 }
 
+bool isValidPart(const std::string& val, InfoType type) {
+    switch (type) {
+    case InfoType::Int:
+    case InfoType::Id:
+        if (!isValidInt(val)) return false;
+        break;
+    case InfoType::Double:
+        if (!isValidDouble(val)) return false;
+        break;
+    case InfoType::Date:
+        if (!isValidDate(val)) return false;
+        break;
+    case InfoType::ManyInt:
+        if (!isValidList(val, '[', ']')) return false;
+        break;
+    case InfoType::ManyId:
+        if (!isValidList(val, '(', ')')) return false;
+        break;
+    case InfoType::String:
+        return true;
+        break;
+    default:
+        return false;
+    }
+    return true;
+}
 
-
-bool Table::addRow(std::string input)
-{
+bool Table::parseInfo(DynamicArray<Info*>& result, std::string input) {
     int pos = 0, start = 0, tokenCount = 0;
     DynamicArray<std::string> tokens;
     for (int i = 0; i < columnAmount; i++) {
@@ -131,37 +155,12 @@ bool Table::addRow(std::string input)
 
 
     //std::cout << input << " HERE 2" << std::endl;
-    DynamicArray<Info*> result;
-    
+
     for (int i = 0; i < columnAmount; ++i) {
         const std::string& val = tokens[i];
         InfoType type = columns[i];
 
-        bool flag = true;
-        switch (type) {
-        case InfoType::Int:
-        case InfoType::Id:
-            if (!isValidInt(val)) flag = false;
-            break;
-        case InfoType::Double:
-            if (!isValidDouble(val)) flag = false;
-            break;
-        case InfoType::Date:
-            if (!isValidDate(val)) flag = false;
-            break;
-        case InfoType::ManyInt:
-            if (!isValidList(val, '[', ']')) flag = false;
-            break;
-        case InfoType::ManyId:
-            if (!isValidList(val, '(', ')')) flag = false;
-            break;
-        case InfoType::String:
-            break;
-        default:
-            return false;
-        }
-
-        if (!flag) {
+        if (!isValidPart(val, type)) {
             for (int j = 0; j < i; j++) {
                 delete result[j];
             }
@@ -171,6 +170,14 @@ bool Table::addRow(std::string input)
 
         result.append(new Info(type, val));
     }
+    return true;
+}
+
+
+bool Table::addRow(std::string input)
+{
+    DynamicArray<Info*> result;
+    if (!parseInfo(result, input)) return false;
     //std::cout << input << " HERE 3" << std::endl;
     Node* newNode = new Node(genNextId(), result, num);
 
@@ -180,16 +187,45 @@ bool Table::addRow(std::string input)
     return true;
 }
 
+bool Table::editRow(int id, std::string input) {
+    if (!findRow(id)) return false;
+
+    DynamicArray<Info*> res;
+    if (!parseInfo(res, input)) return false;
+
+    Node* editedNode = new Node(id, res, num);
+    rowById.erase(id);
+    for (int i = 0; i < rows.size(); i++) {
+        if (rows[i] == rowById.find(id)) {
+            delete rows[i];
+            rows[i] = editedNode;
+        }
+    }
+    rowById.insert(id, editedNode);
+}
+
+bool Table::editRowColumn(int id, std::string column, std::string input) {
+    for (int i = 0; i < columnAmount; i++) {
+        if (nameOfColumns[i] == column) {
+            if (isValidPart(input, columns[i])) {
+                std::string s = "";
+                for (int j = 0; j < columnAmount; j++) {
+                    if (nameOfColumns[j] == column) {
+                        s += input + " ";
+                    }
+                    else {
+                        s += rowById.find(id)->dat[j]->getUserInput()+ " ";
+                    }
+                }
+                return editRow(id, s);
+            }
+        }
+    }
+    return false;
+}
+
 void Table::PrintAllRows()
 {
-    /*
-    std::cout << tableName << std::endl;
-    for (int i = 0; i < columnAmount; i++)
-    {
-        std::cout << nameOfColumns[i] << "||";
-    }
-    std::cout << std::endl;
-    */
     for (int i = 0; i < rows.size(); i++) {
         PrintRow(rows[i]);
     }
@@ -436,12 +472,7 @@ bool Table::deleteRow(int id) {
 }
 
 Node* Table::findRow(int id) {
-    for (int i = 0; i < rows.size(); i++) {
-        if (rows[i]->id == id) {
-            return rows[i];
-        }
-    }
-    return nullptr;
+    return rowById.find(id);
 }
 
 DynamicArray<Node*> Table::findInRows(std::string subs) {
