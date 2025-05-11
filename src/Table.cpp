@@ -5,6 +5,19 @@
 #include <filesystem>
 #include "Validators.h"
 
+Node::Node(unsigned int d, DynamicArray<Info*> list, int table) : id(d), dat(list), tabN(table) {}
+
+Node::~Node()
+{
+    for (unsigned int i = 0; i < dat.size(); ++i) {
+        delete dat[i];
+    }
+}
+
+
+
+
+/* Конструктор создания новой таблицы*/
 Table::Table(int number)
 {
     std::string token;
@@ -88,6 +101,12 @@ Table::Table(int number)
     isValid = true;
 }
 
+/* Конструктор загрузки из файла */
+Table::Table(std::string file)
+{
+    isValid = loadFromFile(file);
+}
+
 Table::~Table()
 {
     for (int i = 0; i < rows.size(); i++) {
@@ -100,6 +119,10 @@ Table::~Table()
 
 }
 
+
+
+
+// Всякие get 
 unsigned int Table::genNextId()
 {
     if ((curId + 1) / ID_AMOUNT != num) {
@@ -109,7 +132,35 @@ unsigned int Table::genNextId()
     return ++curId;
 }
 
-bool isValidPart(const std::string& val, InfoType type) {
+
+std::string Table::getFileName()
+{
+    return "TABLE_" + tableName + ".txt";
+}
+
+
+std::string Table::getName() {
+    return tableName;
+}
+
+
+int Table::getId()
+{
+    return num;
+}
+
+/* Успешно ли загрузилась таблица */
+bool Table::isLoaded()
+{
+    return isValid;
+}
+
+
+
+
+
+/* Проверяет распаршенный на части текст на соответствие типу данных, если не подходит - false */
+bool isValidPart(const std::string& val, InfoType type) { 
     switch (type) {
     case InfoType::Int:
     case InfoType::Id:
@@ -136,8 +187,12 @@ bool isValidPart(const std::string& val, InfoType type) {
     return true;
 }
 
+
+/* Парсит строку от пользователя в массив result (этот массив сразу в node кладётся*/
 bool Table::parseInfo(DynamicArray<Info*>& result, std::string input) {
     int pos = 0, start = 0, tokenCount = 0;
+
+    //сначала разбиваем по пробелам на "токены", проверяем их количество
     DynamicArray<std::string> tokens;
     for (int i = 0; i < columnAmount; i++) {
         unsigned int next = input.find(' ', pos);
@@ -150,12 +205,9 @@ bool Table::parseInfo(DynamicArray<Info*>& result, std::string input) {
         tokens.append(token);
         pos = next + 1;
     }
-    //std::cout << input << " HERE 1" << std::endl;
     if (tokens.size() != columnAmount) return false;
 
-
-    //std::cout << input << " HERE 2" << std::endl;
-
+    // Проверяем каждый "токен" на соответствие типу данных. Если соответствует, добавляем в массив, иначе возвращаем false
     for (int i = 0; i < columnAmount; ++i) {
         const std::string& val = tokens[i];
         InfoType type = columns[i];
@@ -164,7 +216,6 @@ bool Table::parseInfo(DynamicArray<Info*>& result, std::string input) {
             for (int j = 0; j < i; j++) {
                 delete result[j];
             }
-            //std::cout << input << " HERE :(" << std::endl;
             return false;
         }
 
@@ -174,11 +225,11 @@ bool Table::parseInfo(DynamicArray<Info*>& result, std::string input) {
 }
 
 
+/* Добавляет НОВУЮ строку в таблицу. Парсит, создаёт ноду */
 bool Table::addRow(std::string input)
 {
     DynamicArray<Info*> result;
     if (!parseInfo(result, input)) return false;
-    //std::cout << input << " HERE 3" << std::endl;
     Node* newNode = new Node(genNextId(), result, num);
 
     rows.append(newNode);
@@ -187,6 +238,8 @@ bool Table::addRow(std::string input)
     return true;
 }
 
+
+/* Редактирует строку, заменяя её на полностью новую */
 bool Table::editRow(int id, std::string input) {
     if (!findRow(id)) return false;
 
@@ -204,6 +257,8 @@ bool Table::editRow(int id, std::string input) {
     rowById.insert(id, editedNode);
 }
 
+
+/* Редактирует строку, изменяя только в определённой column */
 bool Table::editRowColumn(int id, std::string column, std::string input) {
     for (int i = 0; i < columnAmount; i++) {
         if (nameOfColumns[i] == column) {
@@ -222,30 +277,6 @@ bool Table::editRowColumn(int id, std::string column, std::string input) {
         }
     }
     return false;
-}
-
-void Table::PrintAllRows()
-{
-    for (int i = 0; i < rows.size(); i++) {
-        PrintRow(rows[i]);
-    }
-}
-
-void Table::PrintRows(int amount)
-{
-    if (amount < 0) return;
-    if (amount > rows.size()) {
-        amount = rows.size();
-    }
-    for (int i = 0; i < amount; i++) {
-        PrintRow(rows[i]);
-    }
-
-}
-
-std::string Table::getFileName()
-{
-    return "TABLE_" + tableName + ".txt";
 }
 
 
@@ -383,28 +414,14 @@ bool Table::loadFromFile(std::string filename)
     return true;
 }
 
-int Table::getId()
-{
-    return num;
-}
 
-bool Table::isLoaded()
-{
-    return isValid;
-}
+bool Table::deleteFiles() {
 
-Table::Table(std::string file)
-{
-    isValid = loadFromFile(file);
-}
-
-Node::Node(unsigned int d, DynamicArray<Info*> list, int table): id(d),  dat(list), tabN(table) {}
-
-Node::~Node()
-{
-    for (unsigned int i = 0; i < dat.size(); ++i) {
-        delete dat[i]; 
+    if (!std::filesystem::remove(getFileName())) {
+        return false;
     }
+    std::filesystem::remove(getFileName() + ".hash");
+    return true;
 }
 
 
@@ -452,15 +469,6 @@ bool Table::sortBy(std::string name) {
 }
 
 
-bool Table::deleteFiles() {
-
-    if (!std::filesystem::remove(getFileName())) {
-        return false;
-    }
-    std::filesystem::remove(getFileName() + ".hash");
-    return true;
-}
-
 bool Table::deleteRow(int id) {
     Node* node = findRow(id);
     if (!node) {
@@ -491,17 +499,7 @@ DynamicArray<Node*> Table::findInRows(std::string subs) {
 }
 
 
-bool Table::printRow(Node* node) {
-    if (!node) return false;
-    if (!findRow(node->id)) return false;
 
-    PrintRow(node);
-    return true;
-}
-
-std::string Table::getName() {
-    return tableName;
-}
 
 // Методы для красивого вывода
 
@@ -525,6 +523,7 @@ int getColumnWidth(InfoType type) {
     }
 }
 
+
 DynamicArray<std::string> wrapText(const std::string& text, int width) {
     DynamicArray<std::string> lines;
 
@@ -534,6 +533,7 @@ DynamicArray<std::string> wrapText(const std::string& text, int width) {
     return lines;
 }
 
+
 void printDivider(InfoType* columns, int amount) {
     std::cout << "+" << std::string(ID_COLUMN_WIDTH, '-') << "+";
     for (int i = 0; i < amount; i++) {
@@ -542,19 +542,6 @@ void printDivider(InfoType* columns, int amount) {
     }
     std::cout << '\n';
 }
-
-/*
-void printHeaders(std::string* columnNames, InfoType* columnTypes, int amount) {
-    printDivider(columnTypes, amount);
-    std::cout << "|";
-    for (int i = 0; i < amount; i++) {
-        int width = getColumnWidth(columnTypes[i]);
-        std::cout << std::setw(width) << std::left << columnNames[i] << "|";
-    }
-    std::cout << '\n';
-    printDivider(columnTypes, amount);
-}
-*/
 
 
 void Table::printColumnNames() {
@@ -611,4 +598,36 @@ void Table::PrintRow(Node* row)
         std::cout << '\n';
     }
     printDivider(columns, columnAmount);
+}
+
+
+
+
+// Общие методы вывода различные
+
+bool Table::printRow(Node* node) {
+    if (!node) return false;
+    if (!findRow(node->id)) return false;
+
+    PrintRow(node);
+    return true;
+}
+
+void Table::PrintAllRows()
+{
+    for (int i = 0; i < rows.size(); i++) {
+        PrintRow(rows[i]);
+    }
+}
+
+void Table::PrintRows(int amount)
+{
+    if (amount < 0) return;
+    if (amount > rows.size()) {
+        amount = rows.size();
+    }
+    for (int i = 0; i < amount; i++) {
+        PrintRow(rows[i]);
+    }
+
 }
