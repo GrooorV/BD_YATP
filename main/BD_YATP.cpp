@@ -1,4 +1,94 @@
-#include "BD.h"
+#include "ConsoleApp.h"
+
+int main() {
+    ConsoleApplication c;
+    c.run();
+    
+
+
+
+
+    /*
+    Database BD = Database("Test");
+
+
+    
+    if (!BD.isLoaded()) std::cout << "PLOHO";
+    
+
+    //Проверка создания
+    
+    /*
+Tablichka
+3
+1
+1
+2
+4
+3
+3
+    */
+    /*
+    BD.addNewTable();
+
+    Table* table = BD.findTable(1);
+
+    table->addRow("125 2025-01-01 AAA");
+    table->addRow("127 2023-05-06 BBBD");
+    table->addRow("123 2025-01-05 CCCD");
+    
+
+    std::cout << "Test sorting" << std::endl;
+    table->sortBy("1");
+    table->printColumnNames();
+    table->PrintAllRows();
+    std::cout << std::endl;
+
+    table->printColumnNames();
+    table->sortBy("2");
+    table->PrintAllRows();
+    std::cout << std::endl;
+
+    table->printColumnNames();
+    table->sortBy("3");
+    table->PrintAllRows();
+    std::cout << std::endl;
+
+    std::cout << "Test deleting 10000003" << std::endl;
+    table->deleteRow(10000003);
+    table->PrintAllRows();
+    std::cout << std::endl;
+
+    std::cout << "Test findrows with  D" << std::endl;
+    table->addRow("6623 2022-01-05 DDD");
+    DynamicArray<Node*> n = table->findInRows("D");
+    for (int i = 0; i < n.size(); i++) {
+        table->printRow(n[i]);
+    }
+    std::cout << "\n";
+
+    std::cout << "Test findRow 10000002" << std::endl;
+    Node* nuzh = table->findRow(10000002);
+    table->printRow(nuzh);
+
+
+    BD.saveAllToFiles();
+    BD.deleteTable(1);
+    
+    //Проверка если уже есть
+    
+    /*
+    Table* table = BD.findTable(1);
+
+    table->PrintAllRows();
+
+
+
+
+
+
+
+    #include "BD.h"
 #include "Validators.h"
 #include <iostream>
 #include <fstream>
@@ -43,7 +133,7 @@ private:
         return;
     }
 
-    void processCommand(std::string command) 
+    void processCommand(std::string command)
     {
         //action = toLower(action);
         std::stringstream ss(command);
@@ -214,7 +304,7 @@ private:
                 else {
                     std::cout << "Database hasn't been created. Please, create one" << std::endl;
                 }
-            } 
+            }
             else {
                 if (action == "saveinfo")
                 {
@@ -227,6 +317,53 @@ private:
                     }
                     else {
                         std::cout << "Database hasn't been created. Please, create one" << std::endl;
+                    }
+                }
+                else {
+                    std::cout << "unknown Type of operation with database: " << action << std::endl;
+                }
+            }
+            break;
+
+
+
+        case 'p':
+            if (action == "print")
+            {
+                if (database != nullptr)
+                {
+                    database->printTables();
+                }
+                else {
+                    std::cout << "Database hasn't been created. Please, create one" << std::endl;
+                }
+            }
+            else {
+                if (action == "printrow")
+                {
+                    std::string rowID;
+                    ss >> rowID;
+                    if (isValidInt(rowID))
+                    {
+                        if (std::stoi(rowID) > 0)
+                        {
+                            Node* node = database->findById(std::stoi(rowID));
+                            if (node != nullptr)
+                            {
+                                Table* table = database->findTable(std::stoi(rowID) / 10000000);
+                                table->printColumnNames();
+                                table->printRow(node);
+                            }
+                            else {
+                                std::cout << "couldn't find row with this ID: " << rowID << std::endl;
+                            }
+                        }
+                        else {
+                            std::cout << "ID must be positive integer" << std::endl;
+                        }
+                    }
+                    else {
+                        std::cout << "Not valid ID of table, it must be an integer" << std::endl;
                     }
                 }
                 else {
@@ -278,7 +415,7 @@ private:
                                     table->printColumnNames();
                                 }
                                 else {
-                                    if (action == "printallrows") 
+                                    if (action == "printallrows")
                                     {
                                         table->PrintAllRows();
                                     }
@@ -338,13 +475,25 @@ private:
                                 {
                                     table->PrintAllRows();
                                     std::cout << std::endl;
-                                } 
+                                }
                                 else {
                                     std::cout << "Error while sorting" << std::endl;
                                 }
                             }
                             else {
-                                std::cout << "Unknown Type of operation with table: " << action << std::endl;
+                                if (action == "save")
+                                {
+                                    if (table->saveToFile())
+                                    {
+                                        std::cout << "Successfully saved to file" << std::endl;
+                                    }
+                                    else {
+                                        std::cout << "Error, couldn't save the table to file" << std::endl;
+                                    }
+                                }
+                                else {
+                                    std::cout << "Unknown Type of operation with table: " << action << std::endl;
+                                }
                             }
                             break;
 
@@ -357,7 +506,13 @@ private:
                                 deleteRowID(table, rowID); //не уверен, что для пользователя это хорошо
                             }
                             else {
-                                std::cout << "Unknown Type of operation with table: " << action << std::endl;
+                                if (action == "deletemany")
+                                {
+                                    deleteMany(table, std::stoi(ID));
+                                }
+                                else {
+                                    std::cout << "Unknown Type of operation with table: " << action << std::endl;
+                                }
                             }
                             break;
 
@@ -442,7 +597,14 @@ private:
             if (std::stoi(rowID) > 0)
             {
                 Node* nuzh = table->findRow(std::stoi(rowID));
-                table->printRow(nuzh);
+                if (nuzh != nullptr)
+                {
+                    table->printColumnNames();
+                    table->printRow(nuzh);
+                }
+                else {
+                    std::cout << "Couldn't find row with this ID: " << rowID << std::endl;
+                }
             }
             else {
                 std::cout << "ID must be positive integer" << std::endl;
@@ -459,7 +621,7 @@ private:
         std::cout << "Add new rows by one into table, If you would like to return, type 0" << std::endl;
         while (true)
         {
-            std::cout << ">> ";
+            std::cout << "add >> ";
             getline(std::cin, newRow);
             if (newRow == "0") return;
 
@@ -474,92 +636,41 @@ private:
             }
         }
     }
-};
 
+    void deleteMany(Table* table, int ID)
+    {
+        std::string newID;
+        std::cout << "Delete many rows by one in the table, If you would like to return, type 0" << std::endl;
+        while (true)
+        {
+            std::cout << "delete >> ";
+            getline(std::cin, newID);
+            if (newID == "0") return;
 
-int main() {
-    
-    std::cout << "//124/" << std::endl;
-    ConsoleApplication c;
-    c.run();
-    
-
-
-
-
-    /*
-    Database BD = Database("Test");
-
-
-    
-    if (!BD.isLoaded()) std::cout << "PLOHO";
-    
-
-    //Проверка создания
-    
-    /*
-Tablichka
-3
-1
-1
-2
-4
-3
-3
-    */
-    /*
-    BD.addNewTable();
-
-    Table* table = BD.findTable(1);
-
-    table->addRow("125 2025-01-01 AAA");
-    table->addRow("127 2023-05-06 BBBD");
-    table->addRow("123 2025-01-05 CCCD");
-    
-
-    std::cout << "Test sorting" << std::endl;
-    table->sortBy("1");
-    table->printColumnNames();
-    table->PrintAllRows();
-    std::cout << std::endl;
-
-    table->printColumnNames();
-    table->sortBy("2");
-    table->PrintAllRows();
-    std::cout << std::endl;
-
-    table->printColumnNames();
-    table->sortBy("3");
-    table->PrintAllRows();
-    std::cout << std::endl;
-
-    std::cout << "Test deleting 10000003" << std::endl;
-    table->deleteRow(10000003);
-    table->PrintAllRows();
-    std::cout << std::endl;
-
-    std::cout << "Test findrows with  D" << std::endl;
-    table->addRow("6623 2022-01-05 DDD");
-    DynamicArray<Node*> n = table->findInRows("D");
-    for (int i = 0; i < n.size(); i++) {
-        table->printRow(n[i]);
+            if (isValidInt(newID))
+            {
+                if (std::stoi(newID) > 0)
+                {
+                    table->printColumnNames();
+                    if (table->deleteRow(std::stoi(newID)))
+                    {
+                        table->PrintAllRows();
+                        std::cout << std::endl;
+                    }
+                    else {
+                        std::cout << "Couldn't find row with that ID" << std::endl;
+                    }
+                }
+                else {
+                    std::cout << "ID must be positive integer" << std::endl;
+                }
+            }
+            else {
+                std::cout << "Not valid ID of row, it must be an integer" << std::endl;
+            }
+        }
     }
-    std::cout << "\n";
-
-    std::cout << "Test findRow 10000002" << std::endl;
-    Node* nuzh = table->findRow(10000002);
-    table->printRow(nuzh);
-
-
-    BD.saveAllToFiles();
-    BD.deleteTable(1);
-    
-    //Проверка если уже есть
-    
-    /*
-    Table* table = BD.findTable(1);
-
-    table->PrintAllRows();
+};
     */
 
     return 0;
