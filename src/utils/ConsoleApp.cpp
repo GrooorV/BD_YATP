@@ -229,7 +229,7 @@ void ConsoleApplication::proccessBD(std::stringstream& ss)
 
 
     case 'p':
-        if (action == "print")
+        if (action == "printnames")
         {
             if (database != nullptr)
             {
@@ -242,33 +242,51 @@ void ConsoleApplication::proccessBD(std::stringstream& ss)
         else {
             if (action == "printrow")
             {
-                std::string rowID;
-                ss >> rowID;
-                if (isValidInt(rowID))
+                if (database != nullptr)
                 {
-                    if (std::stoi(rowID) > 0)
+                    std::string rowID;
+                    ss >> rowID;
+                    if (isValidInt(rowID))
                     {
-                        Node* node = database->findById(std::stoi(rowID));
-                        if (node != nullptr)
+                        if (std::stoi(rowID) > 0)
                         {
-                            Table* table = database->findTable(std::stoi(rowID) / 10000000);
-                            table->printColumnNames();
-                            table->printRow(node);
+                            Node* node = database->findById(std::stoi(rowID));
+                            if (node != nullptr)
+                            {
+                                Table* table = database->findTable(std::stoi(rowID) / 10000000);
+                                table->printColumnNames();
+                                table->printRow(node);
+                            }
+                            else {
+                                std::cout << "couldn't find row with this ID: " << rowID << std::endl;
+                            }
                         }
                         else {
-                            std::cout << "couldn't find row with this ID: " << rowID << std::endl;
+                            std::cout << "ID must be positive integer" << std::endl;
                         }
                     }
                     else {
-                        std::cout << "ID must be positive integer" << std::endl;
+                        std::cout << "Not valid ID of table, it must be an integer" << std::endl;
                     }
-                }
+                } 
                 else {
-                    std::cout << "Not valid ID of table, it must be an integer" << std::endl;
+                    std::cout << "Database hasn't been created. Please, create one" << std::endl;
                 }
             }
             else {
-                std::cout << "unknown Type of operation with database: " << action << std::endl;
+                if (action == "print")
+                {
+                    if (database != nullptr)
+                    {
+                        database->printFullTables();
+                    }
+                    else {
+                        std::cout << "Database hasn't been created. Please, create one" << std::endl;
+                    }
+                }
+                else {
+                    std::cout << "unknown Type of operation with database: " << action << std::endl;
+                }
             }
         }
         break;

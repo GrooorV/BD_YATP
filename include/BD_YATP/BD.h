@@ -31,6 +31,8 @@ public:
 
 	void printTables();
 
+	void printFullTables();
+
 	bool isLoaded();
 
 private:
