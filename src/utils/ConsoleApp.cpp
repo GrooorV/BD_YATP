@@ -345,7 +345,6 @@ void ConsoleApplication::proccessTable(std::stringstream& ss)
                             {
                                 toAdd += tmp + " ";
                             }
-                            std::cout << toAdd << endl;
                             if (table->addRow(toAdd))
                             {
                                 std::cout << "Successfully added new row to table: " << ID << std::endl;
@@ -438,6 +437,74 @@ void ConsoleApplication::proccessTable(std::stringstream& ss)
                         }
                         else {
                             std::cout << "Unknown Type of operation with table: " << action << std::endl;
+                        }
+                        break;
+
+
+                    case 'e':
+                        if (action == "edit")
+                        {
+                            std::string rowID;
+                            std::string tmp;
+                            std::string toAdd;
+                            ss >> rowID;
+                            while (ss >> tmp)
+                            {
+                                toAdd += tmp + " ";
+                            }
+                            if (isValidInt(rowID))
+                            {
+                                if (std::stoi(rowID) > 0)
+                                {
+                                    if (table->editRow(std::stoi(rowID), toAdd))
+                                    {
+                                        std::cout << "Row was successfully edited" << std::endl;
+                                    }
+                                    else {
+                                        std::cout << "Error, please, check id, amount of elements you are gave on input and info types and try again" << std::endl;
+                                    }
+                                }
+                                else {
+                                    std::cout << "ID must be positive integer" << std::endl;
+                                }
+                            }
+                            else {
+                                std::cout << "Not valid ID of table, it must be an integer" << std::endl;
+                            }
+                        }
+                        else {
+                            if (action == "editelement")
+                            {
+                                std::string rowID;
+                                std::string column;
+                                std::string element;
+                                ss >> rowID;
+                                ss >> column;
+                                ss >> element;
+                                std::cout << rowID << " " << column << " " << element << endl;
+                                if (isValidInt(rowID))
+                                {
+                                    if (std::stoi(rowID) > 0)
+                                    {
+                                        if (table->editRowColumn(std::stoi(rowID), column, element))
+                                        {
+                                            std::cout << "Element was successfully edited" << std::endl;
+                                        }
+                                        else {
+                                            std::cout << "Error, please, check id, name of column and info type and try again" << std::endl;
+                                        }
+                                    }
+                                    else {
+                                        std::cout << "ID must be positive integer" << std::endl;
+                                    }
+                                }
+                                else {
+                                    std::cout << "Not valid ID of table, it must be an integer" << std::endl;
+                                }
+                            }
+                            else {
+                                std::cout << "Unknown Type of operation with table: " << action << std::endl;
+                            }
                         }
                         break;
 
