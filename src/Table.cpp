@@ -194,13 +194,13 @@ bool Table::editRow(int id, std::string input) {
     if (!parseInfo(res, input)) return false;
 
     Node* editedNode = new Node(id, res, num);
-    rowById.erase(id);
     for (int i = 0; i < rows.size(); i++) {
         if (rows[i] == rowById.find(id)) {
             delete rows[i];
             rows[i] = editedNode;
         }
     }
+    rowById.erase(id);
     rowById.insert(id, editedNode);
 }
 
@@ -482,6 +482,7 @@ DynamicArray<Node*> Table::findInRows(std::string subs) {
         for (int j = 0; j < rows[i]->dat.size(); j++) {
             if (rows[i]->dat[j]->getUserInput().find(subs) != std::string::npos) {
                 nodes.append(rows[i]);
+                break;
             }
         }
     }
