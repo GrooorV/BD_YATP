@@ -6,6 +6,13 @@
 #include <sstream>
 
 
+void toLowercase(std::string& input) {
+    for (size_t i = 0; i < input.length(); ++i) {
+        input[i] = std::tolower(input[i]);
+    }
+    return;
+}
+
 class ConsoleApplication {
 public:
     ConsoleApplication()
@@ -18,11 +25,6 @@ public:
         while (true) {
             std::cout << ">> ";
             std::getline(std::cin, command);
-
-            if (command == "EXIT") break;
-           
-            if (command == "HELP") HELP();
-
             processCommand(command);
         }
     }
@@ -38,18 +40,20 @@ private:
         return;
     }
 
-    void processCommand(const std::string& command) {
+    void processCommand(std::string command) {
+        //action = toLower(action);
         std::stringstream ss(command);
         std::string action;
         ss >> action;
-        //action = toLower(action);
-
+        toLowercase(action);
+        if (action == "exit") return;
+        if (action == "help") HELP();
         if (action.empty()) return;
         if (action.length() == 0) return;
 
         switch (action[0]) {
-        case 'B':
-            if (action == "BD") {
+        case 'b':
+            if (action == "bd") {
                 proccessBD(ss);
             }
             else {
@@ -57,8 +61,8 @@ private:
                 return;
             }
             break;
-        case 'T':
-            if (action == "TABLE") {
+        case 't':
+            if (action == "table") {
                 //processDoubleDeclaration(ss);
             }
             else {
@@ -75,12 +79,13 @@ private:
     {
         std::string action;
         ss >> action;
+        toLowercase(action);
         switch (action[0])
         {
 
 
-        case 'C':
-            if (action == "CREATE")
+        case 'c':
+            if (action == "create")
             {
                 std::string name;
                 ss >> name;
@@ -102,8 +107,8 @@ private:
             break;
 
 
-        case 'A':
-            if (action == "ADD")
+        case 'a':
+            if (action == "add")
             {
                 if (database != nullptr)
                 {
@@ -116,7 +121,7 @@ private:
             }
             else
             {
-                if (action == "ADDFROMFILE")
+                if (action == "addfromfile")
                 {
                     if (database != nullptr)
                     {
@@ -132,6 +137,7 @@ private:
                                 std::cout << "Error with Checksum check of file:" << filename << " do you want to boot table anyway, other errors may happen? (y for yes, any other keys for no)" << std::endl;
                                 std::string s;
                                 getline(std::cin, s);
+                                toLowercase(s);
                                 if (s == "y")
                                 {
                                     if (database->addTable(filename))
@@ -157,8 +163,8 @@ private:
             break;
 
 
-        case 'D':
-            if (action == "DELETE")
+        case 'd':
+            if (action == "delete")
             {
                 if (database != nullptr)
                 {
@@ -192,8 +198,8 @@ private:
             break;
 
 
-        case 'S':
-            if (action == "SAVE")
+        case 's':
+            if (action == "save")
             {
                 if (database != nullptr)
                 {
@@ -207,7 +213,7 @@ private:
                 }
             } 
             else {
-                if (action == "SAVEINFO")
+                if (action == "saveinfo")
                 {
                     if (database != nullptr)
                     {
@@ -235,12 +241,11 @@ private:
 
 
 int main() {
-    /*
+    
     std::cout << "//124/" << std::endl;
     ConsoleApplication c;
     c.run();
-    */
-
+    
 
 
 
@@ -281,12 +286,12 @@ Tablichka
     table->PrintAllRows();
     std::cout << std::endl;
 
-
+    table->printColumnNames();
     table->sortBy("2");
     table->PrintAllRows();
     std::cout << std::endl;
 
-
+    table->printColumnNames();
     table->sortBy("3");
     table->PrintAllRows();
     std::cout << std::endl;
