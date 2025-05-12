@@ -3,7 +3,6 @@
 
 Info::Info(InfoType t, const std::string& input) : type(t), userInput(input) {
     switch (type) {
-        // тут любой дурак поймет че происходит
         case InfoType::Int:
         case InfoType::Id:
             data.i = std::stoi(input);

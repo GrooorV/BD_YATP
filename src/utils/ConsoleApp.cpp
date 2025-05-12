@@ -154,7 +154,6 @@ void ConsoleApplication::proccessCommand(std::string command)
     toLowercase(action);
     if (action == "help") { HELP();  return; }
     if (action.empty()) return;
-    if (action.length() == 0) return;
 
     switch (action[0]) {
     case 'b':
@@ -277,7 +276,7 @@ void ConsoleApplication::proccessBD(std::stringstream& ss)
                 ss >> id;
                 if (isValidInt(id))
                 {
-                    if (std::stoi(id) >= 0)
+                    if (std::stoi(id) > 0)
                     {
                         if (database->deleteTable(std::stoi(id)))
                             std::cout << "Table " << id << " was successfully deleted" << std::endl;
