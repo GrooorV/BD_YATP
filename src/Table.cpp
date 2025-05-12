@@ -187,10 +187,60 @@ bool isValidPart(const std::string& val, InfoType type) {
 
 /* Парсит строку от пользователя в массив result (этот массив сразу в node кладётся*/
 bool Table::parseInfo(DynamicArray<Info*>& result, std::string input) {
-    int pos = 0, start = 0, tokenCount = 0;
+    //int pos = 0, start = 0, tokenCount = 0;
 
     //сначала разбиваем по пробелам на "токены", проверяем их количество
     DynamicArray<std::string> tokens;
+
+    while (tokens.size() < columnAmount && pos < input.size()) {
+        std::string token;
+
+        if (input[pos] == '"') {
+            pos++;
+            std::string buffer;
+
+            while (pos < input.size()) {
+                char c = input[pos++];
+
+                if (c == '\\') {
+                    if (pos >= input.size()) return false;
+                    char nextChar = input[pos++];
+                    if (nextChar == '"') {
+                        buffer += '"';
+                    }
+                    else {
+                        return false;
+                    }
+                }
+                else {
+                    if (c == '"') {
+                        break;
+                    }
+                    else {
+                        buffer += c;
+                    }
+                }    
+            }
+            token = buffer;
+            if (pos < input.size() && input[pos] == ' ') {
+                pos++;
+            }
+        }
+        else {
+            int next = input.find(' ', pos);
+            if (next == std::string::npos) {
+                token = input.substr(pos);
+                pos = input.size();
+            }
+            else {
+                token = input.substr(pos, next - pos);
+                pos = next + 1;
+            }
+        }
+        tokens.append(token);
+    }
+
+    /*
     for (int i = 0; i < columnAmount; i++) {
         unsigned int next = input.find(' ', pos);
         if (next == std::string::npos) {
@@ -202,6 +252,7 @@ bool Table::parseInfo(DynamicArray<Info*>& result, std::string input) {
         tokens.append(token);
         pos = next + 1;
     }
+    */
     if (tokens.size() != columnAmount) return false;
 
     // Проверяем каждый "токен" на соответствие типу данных. Если соответствует, добавляем в массив, иначе возвращаем false
