@@ -667,7 +667,7 @@ void ConsoleApplication::deleteRowID(Table* table, std::string rowID)
         if (std::stoi(rowID) > 0)
         {
             table->printColumnNames();
-            if (table->deleteRow(std::stoi(rowID)))
+            if (table->deleteRow(std::stoi(rowID) - 1))
             {
                 table->PrintAllRows();
                 std::cout << std::endl;

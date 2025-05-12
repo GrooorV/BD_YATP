@@ -25,6 +25,7 @@ Table::Table(int number)
     bool usersRightInput = 0;
     num = number;
     curId = ID_AMOUNT * num;
+    //cur
     std::cout << "Enter a table name: " << curId << endl;
     std::getline(std::cin, tableName);
     std::cout << "How many columns must be in table?" << endl;
@@ -325,12 +326,11 @@ bool Table::editRowColumn(int id, std::string column, std::string input) {
 }
 
 bool Table::deleteRow(int id) {
-    Node* node = findRow(id);
-    if (!node) {
-        return false;
-    }
 
-    rowById.erase(id);
+    if (id > rows.size()) return false;
+    Node* node = rows[id];
+
+    rowById.erase(node->id);
     rows.removeValue(node);
     delete node;
 }
@@ -593,7 +593,7 @@ void printDivider(InfoType* columns, int amount) {
 void Table::printColumnNames() {
     printDivider(columns, columnAmount);
 
-    std::cout << "|" << std::setw(ID_COLUMN_WIDTH) << std::left << "ID" << "|";
+    std::cout << "|" << std::setw(ID_COLUMN_WIDTH) << std::left << "NUM" << "|";
     for (int i = 0; i < columnAmount; i++) {
         int width = getColumnWidth(columns[i]);
         std::cout << std::setw(width) << std::left << nameOfColumns[i] << "|";
@@ -604,7 +604,7 @@ void Table::printColumnNames() {
 }
 
 
-void Table::PrintRow(Node* row)
+void Table::PrintRow(Node* row, int number)
 {
     DynamicArray<DynamicArray<std::string>> wrappedColumns;
     int maxHeight = 1;
@@ -618,11 +618,11 @@ void Table::PrintRow(Node* row)
         }
         wrappedColumns.append(std::move(lines));
     }
-
+    
     for (int line = 0; line < maxHeight; line++) {
         std::cout << "|";
         if (line == 0) {
-            std::cout << std::setw(ID_COLUMN_WIDTH) << std::left << row->id;
+            std::cout << std::setw(ID_COLUMN_WIDTH) << std::left << number;
         }
         else {
             std::cout << std::setw(ID_COLUMN_WIDTH) << " ";
@@ -655,14 +655,14 @@ bool Table::printRow(Node* node) {
     if (!node) return false;
     if (!findRow(node->id)) return false;
 
-    PrintRow(node);
+    PrintRow(node, 1);
     return true;
 }
 
 void Table::PrintAllRows()
 {
     for (int i = 0; i < rows.size(); i++) {
-        PrintRow(rows[i]);
+        PrintRow(rows[i], i+1);
     }
 }
 
@@ -673,7 +673,7 @@ void Table::PrintRows(int amount)
         amount = rows.size();
     }
     for (int i = 0; i < amount; i++) {
-        PrintRow(rows[i]);
+        PrintRow(rows[i], i+1);
     }
 
 }

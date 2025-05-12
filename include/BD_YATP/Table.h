@@ -80,7 +80,7 @@ private:
 
 	unsigned int genNextId();
 
-	void PrintRow(Node*);
+	void PrintRow(Node*, int);
 
 	bool parseInfo(DynamicArray<Info*>&, std::string);
 };

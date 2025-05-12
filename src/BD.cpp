@@ -166,7 +166,7 @@ void Database::printFullTables() {
 	}
 }
 
-Node* Database::findById(int id) {
+Node* Database::findById(int id) { // findById(int cellId, int tableId)
 	int tableNum = id / ID_AMOUNT;
 
 	Table* table = findTable(tableNum);
