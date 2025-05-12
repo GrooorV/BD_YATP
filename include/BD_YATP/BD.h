@@ -21,6 +21,8 @@ public:
 
 	Table* findTable(int);
 
+	Table* findTable(std::string);
+
 	bool deleteTable(int);
 
 	Node* findById(int);

@@ -27,13 +27,23 @@ void Database::addNewTable()
 	tables.append(new Table(++tableID));
 }
 
-Table* Database::findTable(int id)
+Table* Database::findTable(int num)
+{
+	if (num > tables.size()) return nullptr;
+
+	return tables[num - 1];
+}
+
+Table* Database::findTable(std::string name)
 {
 	for (int i = 0; i < tables.size(); i++) {
-		if (tables[i]->getId() == id) return tables[i];
+		if (tables[i]->getName() == name) {
+			return tables[i];
+		}
 	}
 	return nullptr;
 }
+
 
 bool Database::isLoaded()
 {
@@ -153,7 +163,7 @@ bool Database::deleteTable(int id) {
 
 void Database::printTables() {
 	for (int i = 0; i < tables.size(); i++) {
-		std::cout << tables[i]->getId() << " " << tables[i]->getName() << '\n';
+		std::cout << i+1 << ". " << tables[i]->getName() << '\n';
 	}
 }
 
