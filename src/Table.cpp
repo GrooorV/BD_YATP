@@ -187,7 +187,7 @@ bool isValidPart(const std::string& val, InfoType type) {
 
 /* Парсит строку от пользователя в массив result (этот массив сразу в node кладётся*/
 bool Table::parseInfo(DynamicArray<Info*>& result, std::string input) {
-    //int pos = 0, start = 0, tokenCount = 0;
+    int pos = 0, start = 0, tokenCount = 0;
 
     //сначала разбиваем по пробелам на "токены", проверяем их количество
     DynamicArray<std::string> tokens;
