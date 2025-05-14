@@ -24,7 +24,7 @@ Table::Table(int number)
     int userType = 0;
     bool usersRightInput = 0;
     num = number;
-    curId = ID_AMOUNT * num;
+    curId = ID_START;
     //cur
     std::cout << "Enter a table name: " << curId << endl;
     std::getline(std::cin, tableName);
