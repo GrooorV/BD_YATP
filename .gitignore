@@ -16,6 +16,10 @@
 # Mono auto generated files
 mono_crash.*
 
+# игнор папки билда 
+build/
+
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
