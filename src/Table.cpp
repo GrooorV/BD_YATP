@@ -398,6 +398,69 @@ DynamicArray<Node*> Table::findInRows(std::string subs) {
 }
 
 
+// связи
+
+// заполнение нулями
+void Table::initLinks (){
+    links.clear();
+    for (int i = 0; i < rows.size(); ++i) {
+        for (int j = 0; j < columnAmount; ++j) links.append(0);
+    }
+}
+
+
+// под капотом; таргетированно помечаем айди
+// что бы контролировать запись
+void Table::editLink (int col, int row, int id){ links[(row-1)*columnAmount+col]=id; }
+
+// здесь будет все, что бы проконтролировать ввод юзера
+//
+void Table::findAndFill(std::string inp){
+    //"1 10 20 11 22" таблица, столбец строка исходной, столбец строка таргетированной
+    //"1 10 20 asd" таблица, столбец строка исходной, значение которой найти и поставить его айди 
+
+    // Убираем множественные пробелы, оставляя один
+    std::string tmpInp;
+    bool lastWasSpace = false;
+    for (char c : inp) {
+        if (c == ' ') {
+            if (!lastWasSpace) {
+                tmpInp += c;
+                lastWasSpace = true;
+            }
+        } else {
+            tmpInp += c;
+            lastWasSpace = false;
+        }
+    }
+
+    // Удаляем пробелы в начале и конце
+    size_t start = tmpInp.find_first_not_of(' ');
+    size_t end = tmpInp.find_last_not_of(' ');
+    if (start == std::string::npos) /* строка пуста */ return;
+    tmpInp = tmpInp.substr(start, end - start + 1);
+
+    int inpType = 0; // 4 - первый тип, 3 - второй
+
+    for (char c : tmpInp) if (c == ' ') inpType++;
+
+    switch(inpType){
+        case 4:
+            // найти таблицу, в ней столбец, строку и из них айди
+        return;
+        case 3:
+            // похоже, но тут пользуемся поиском по таблице
+        return;
+    }
+
+}
+
+
+void Table::updateLinks(){
+
+
+}
+
 
 
 // Методы работы с файлами
@@ -425,27 +488,6 @@ std::string infoTypeToString(InfoType type) {
     default: return "None";
     }
 }
-
-// связи
-
-// заполнение нулями
-void initLinks (int col, int row){
-}
-
-// под капотом: таргетированно помечаем айди, что бы не было проблем
-void editLink (int col, int row, int id){
-}
-
-void findAndFill(std::string){
-}
-
-
-void updateLinks(){
-}
-
-
-
-
 
 bool Table::saveToFile()
 {

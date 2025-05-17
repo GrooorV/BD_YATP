@@ -46,7 +46,7 @@ public:
 	void printColumnNames();
 
 	// связи
-	void initLinks (int, int);
+	void initLinks ();
 
     void editLink (int, int, int);
 
@@ -78,7 +78,7 @@ private:
 	int curId;
 	int columnAmount;
     
-	//Info links(6,/*input*/); // связи
+	DynamicArray<int> links; // "таблица связей"
 
 	bool isValid;
 	std::string tableName;

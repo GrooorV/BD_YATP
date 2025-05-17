@@ -13,7 +13,7 @@ enum class InfoType {
     Double,
     String,
     Date,
-    Id, //закопать и обоссать
+    Id,
     ManyInt,
     ManyId,
     None,

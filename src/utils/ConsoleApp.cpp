@@ -14,7 +14,7 @@ ConsoleApplication::ConsoleApplication()
 void ConsoleApplication::run() {
     std::string command;
     while (true) {
-        std::cout << ">> ";
+        std::cout << "> ";
         std::getline(std::cin, command);
         if (command == "exit" || command == "EXIT") return;
         proccessCommand(command);
