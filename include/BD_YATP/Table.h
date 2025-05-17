@@ -45,6 +45,15 @@ public:
 
 	void printColumnNames();
 
+	// связи
+	void initLinks (int, int);
+
+    void editLink (int, int, int);
+
+	void findAndFill(std::string);
+
+	void updateLinks();
+
 	std::string getFileName();
 
 	bool saveToFile();
@@ -68,6 +77,8 @@ private:
 	int num;
 	int curId;
 	int columnAmount;
+    
+	//Info links(6,/*input*/); // связи
 
 	bool isValid;
 	std::string tableName;

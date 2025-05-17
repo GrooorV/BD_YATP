@@ -2,15 +2,21 @@
 #include <string>
 #include "DynamicArray.h"
 
+//struct linkTable{};
+//параметры названия таблицы
+//название колонки из названия колонки
+//В таблицу название колонки
+//название связующей таблицы
+
 enum class InfoType {
     Int,
     Double,
     String,
     Date,
-    Id,
+    Id, //закопать и обоссать
     ManyInt,
     ManyId,
-    None
+    None,
 };
 
 class Info {

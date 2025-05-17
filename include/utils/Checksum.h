@@ -2,6 +2,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <cstdint>
 
 uint64_t simpleHash(const std::string&);
 

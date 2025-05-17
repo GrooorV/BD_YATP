@@ -78,7 +78,7 @@ Table::Table(int number)
                     break;
                 case 4:
                     columns[i] = InfoType::Date;
-                    break;
+                    break; // 5-6 кейс убить насмерть
                 case 5:
                     columns[i] = InfoType::Id;
                     break;
@@ -425,6 +425,27 @@ std::string infoTypeToString(InfoType type) {
     default: return "None";
     }
 }
+
+// связи
+
+// заполнение нулями
+void initLinks (int col, int row){
+}
+
+// под капотом: таргетированно помечаем айди, что бы не было проблем
+void editLink (int col, int row, int id){
+}
+
+void findAndFill(std::string){
+}
+
+
+void updateLinks(){
+}
+
+
+
+
 
 bool Table::saveToFile()
 {
