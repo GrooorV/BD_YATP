@@ -941,6 +941,10 @@ bool Table::addRelation(std::string fromColumn, int toTable, std::string display
         std::cout << "Relation for this column already exists" << std::endl;
         return false;
     }
+    if (toTable == num) {
+        std::cout << "Cannot relate table to itself" << std::endl;
+        return false;
+    }
     ColumnRelation* newRelation = new ColumnRelation(fromColumn, toTable, displayColumn);
     relations.append(newRelation);
     return true;
