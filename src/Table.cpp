@@ -397,68 +397,72 @@ DynamicArray<Node*> Table::findInRows(std::string subs) {
     return nodes;
 }
 
-
+Info* Table::getCell(int col,int row){
+    Info* cell = rows[row]->dat[col];
+    if (cell)return cell;
+    else return nullptr;
+}
 // связи
 
 // заполнение нулями
 void Table::initLinks (){
     links.clear();
-    for (int i = 0; i < rows.size(); ++i) {
-        for (int j = 0; j < columnAmount; ++j) links.append(0);
+    std::cout<< "processing links initing...\n";
+    for (int i = 0; i < rows.size(); ++i) { links.append(0);
     }
+    std::string tabName;
+    std::cout<< "enter table name for linking:\n>";
+    std::cin>>tabName;
+
+    Table* target;
+    for (int i=0; i<(*other).size(); i++){
+        Table* cur = (*other)[i];
+        if (cur->getName()==tabName) {tarId = cur->getId();
+            break;}
+        }
+    if (tarId) std::cout<< "done. now this table linked with "<< tabName<<".\n";
+    else std::cout<< "invalid name";
 }
 
-
-// под капотом; таргетированно помечаем айди
-// что бы контролировать запись
-void Table::editLink (int col, int row, int id){ links[(row-1)*columnAmount+col]=id; }
-
+void Table::editProcess(){
+    for(;;){
+        std::cout<< "editing links in "<< tableName <<".\n";
+        std::cout<< "enter ROW for this table and ROW for connected (ex:> 2 1 ):\n>";
+        std::string inp;
+        std::cin>>inp;
+        findAndFill(inp);
+        std::cout<< "still want connecting things? [y/n]\n>";
+        char op;
+        std::cin>>op;
+        if (op!='Y' || op!='y')break;
+    }return;
+}
 // здесь будет все, что бы проконтролировать ввод юзера
 //
 void Table::findAndFill(std::string inp) {
+
+    // inp = "  2  3    "
+    // первая строка в исходной таблице, линк со второй в таргете
     std::istringstream iss(inp);
     std::string token;
     DynamicArray<std::string> tokens;
 
     while (iss >> token) { tokens.append(token);}
-
-    int inpType = tokens.size();
-
-    if (inpType != 4 && inpType != 5) return;
-
-    // Общие три числа
-    int tableId = std::stoi(tokens[0]);
-    int rowIdx = std::stoi(tokens[1]);
-    int colIdx = std::stoi(tokens[2]);
+    int selfRow = std::stoi(tokens[0]);
+    int tarRow = std::stoi(tokens[1]);
 
     Table* target;
     for (int i=0; i<(*other).size(); i++){
         Table* cur = (*other)[i];
-        if (cur->getId()==tableId) {target = cur;
+        if (cur->getId()==tarId) {target = cur;
             break;}
         return;}
     if (!target) return;
-
+/*
     Info* cell = rows[rowIdx]->dat[colIdx];
-
-    switch (inpType) {
-        case 5: {
-            std::string str = tokens[3];
-            int targetRow = std::stoi(tokens[4]);
-            int targetCol = std::stoi(tokens[5]);
-
-            // Логика для случая с 5 элементами (3 числа, строка, 2 числа)
-
-            break;
-        }
-        case 4: {
-            std::string searchValue = tokens[3];
-
-            // Логика для случая с 4 элементами (3 числа и строка)
-
-            break;
-        }
-    }
+*/
+    links[selfRow] = target->rows[tarRow]->id;//сделана запись в связи
+    std::cout<<"linking completed sucsessfuly\n";
 }
 
 void Table::updateLinks(){

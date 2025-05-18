@@ -54,8 +54,8 @@ public:
 	// связи
 	void initLinks ();
 
-    void editLink (int, int, int);
-
+	void editProcess();
+	
 	void findAndFill(std::string);
 
 	void updateLinks();
@@ -72,6 +72,8 @@ public:
 
 	int getId();
 
+	Info* getCell(int,int);
+
 	std::string getName();
 
 	bool isLoaded();
@@ -84,7 +86,9 @@ private:
 	int curId;
 	int columnAmount;
     
+	
 	DynamicArray<int> links; // "таблица связей"
+	int tarId; //таргет на таблицу
 
 	bool isValid;
 	std::string tableName;
