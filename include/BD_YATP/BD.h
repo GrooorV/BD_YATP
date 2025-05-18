@@ -45,6 +45,8 @@ public:
 
 	bool isLoaded();
 
+	bool CreateRelation(int& fromTable, std::string& fromColumn, int& toTable, std::string& toColumn);
+
 private:
 
 	bool isValid;

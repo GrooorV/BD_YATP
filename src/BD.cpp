@@ -186,3 +186,22 @@ Node* Database::findById(int id) { // findById(int cellId, int tableId)
 	return table->findRow(id);
 	
 }
+
+bool Database::CreateRelation(int& fromTable, std::string& fromColumn, int& toTable, std::string& toColumn)
+{
+	Table* fromtable = findTable(fromTable);
+	Table* totable = findTable(toTable);
+	if (fromtable == nullptr)
+	{
+		std::cout << "No such \"fromTable\" " << endl;
+		return false;
+	}
+
+	if (totable == nullptr)
+	{
+		std::cout << "No such \"toTable\" " << endl;
+		return false;
+	}
+
+
+}
