@@ -312,8 +312,11 @@ bool Database::CreateRelation(int fromTable, const std::string& fromColumn, int 
 	{
 		Relation* link = new Relation(fromTable, toTable, fromColumn, toColumn);
 		relations.append(link);
-		fromtable->addRelation(fromColumn, toTable, toColumn);
-		return true; //убрать
+
+		if (fromtable->addRelation(fromColumn, toTable, toColumn)) {
+			return true;
+		}
+		return false; //убрать
 	}
 	else {
 		std::cout << "this fromColumn " << fromColumn << " from table " << fromTable << " does not contain linked type of data" << endl;
