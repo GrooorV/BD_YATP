@@ -139,7 +139,7 @@ unsigned int Table::genNextId()
 {
     if ((curId + 1) / ID_AMOUNT != num) {
         std::cout << "OVERFLOW??" << std::endl; // нужно додумать 
-        return 0;
+        return ++curId;
     }
     return ++curId;
 }
