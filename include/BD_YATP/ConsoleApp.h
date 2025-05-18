@@ -17,8 +17,6 @@ private:
 
 	void HELP();
 
-	void proccessCommand(std::string command);
-
 	void proccessBD(std::stringstream& ss);
 
 	void proccessTable(std::stringstream& ss);

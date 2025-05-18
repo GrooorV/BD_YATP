@@ -11,6 +11,9 @@ struct Relation {
 	int toTable;
 	std::string fromColumn;
 	std::string toColumn;
+
+	Relation(int fromTable, int toTable, const std::string& fromColumn, const std::string& toColumn);
+	//~Relation();????
 };
 
 
@@ -45,7 +48,7 @@ public:
 
 	bool isLoaded();
 
-	bool CreateRelation(int& fromTable, std::string& fromColumn, int& toTable, std::string& toColumn);
+	bool CreateRelation(int fromTable, const std::string& fromColumn, int toTable, const std::string& toColumn);
 
 private:
 
@@ -54,7 +57,7 @@ private:
 	bool loadBDfromFile(std::string);
 
 
-	DynamicArray<Relation> relations;
+	DynamicArray<Relation*> relations; // массив связей
 	DynamicArray<Table*> tables; //массив таблиц в бд, динамический масси в
 	int tableID; // 
 };

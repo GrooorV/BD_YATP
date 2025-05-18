@@ -72,9 +72,14 @@ public:
 	bool isLoaded();
 
 	bool printRow(Node*);
+	
+	std::string* getNames();
+
+	int getColumnAmount();
 
 	int getRowId(int);
 
+	InfoType* getInfoTypes();
 	//Relations
 
 	void addRelation(std::string fromColumn, int toTable, std::string displayColumn);

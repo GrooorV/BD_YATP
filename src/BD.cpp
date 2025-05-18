@@ -4,6 +4,13 @@
 #include "Validators.h"
 #include "Checksum.h"
 
+Relation::Relation(int fromTable, int toTable, const std::string& fromColumn, const std::string& toColumn) 
+	: fromTable(fromTable),
+	toTable(toTable),
+	fromColumn(fromColumn),
+	toColumn(toColumn)
+{}
+
 Database::Database(std::string bname) {
 	std::string filename = "BD_" + bname + ".txt";
 	isValid = loadBDfromFile(bname);
@@ -187,21 +194,68 @@ Node* Database::findById(int id) { // findById(int cellId, int tableId)
 	
 }
 
-bool Database::CreateRelation(int& fromTable, std::string& fromColumn, int& toTable, std::string& toColumn)
+bool Database::CreateRelation(int fromTable, const std::string& fromColumn, int toTable, const std::string& toColumn)
 {
 	Table* fromtable = findTable(fromTable);
 	Table* totable = findTable(toTable);
+
 	if (fromtable == nullptr)
 	{
-		std::cout << "No such \"fromTable\" " << endl;
+		std::cout << "No such \"fromTable\" " << fromTable << endl;
 		return false;
 	}
 
 	if (totable == nullptr)
 	{
-		std::cout << "No such \"toTable\" " << endl;
+		std::cout << "No such \"toTable\" " << toTable << endl;
 		return false;
 	}
 
+	std::string* fromAllNames = fromtable->getNames();
+	std::string* toAllNames = totable->getNames();
 
+	int fromAmount = fromtable->getColumnAmount();
+	int toAmount = totable->getColumnAmount();
+	int first, second;
+
+	for (first = 0; first < fromAmount; first++) //тот ли номер?
+	{
+		if (fromAllNames[first] == fromColumn)
+			break;
+	}
+
+	if (first == fromAmount) // верно ли?
+	{
+		std::cout << "No fromColumn with such name " << fromColumn << endl;
+		return false;
+	}
+
+	for (second = 0; second < toAmount; second++) //тот ли номер?
+	{
+		if (toAllNames[second] == toColumn)
+			break;
+	}
+
+	if (second == toAmount) // верно ли?
+	{
+		std::cout << "No toColumn with such name " << toColumn << endl; 
+		return false;
+	}
+
+	InfoType* colunmsFromTable = fromtable->getInfoTypes();
+	InfoType* colunmsToTable = totable->getInfoTypes();
+
+	if (*colunmsFromTable == InfoType::Id || *colunmsFromTable == InfoType::ManyId)
+	{
+		Relation* link = new Relation(fromTable, toTable, fromColumn, toColumn);
+		relations.append(link);
+		//return fromtable->addRelation(fromColumn, toTable, toColumn);
+		return true; //убрать
+	}
+	else {
+		std::cout << "this fromColumn " << fromColumn << " from table " << fromTable << " does not contain linked type of data" << endl;
+		return false;
+	}
+
+	return false;
 }
