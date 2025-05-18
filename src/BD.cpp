@@ -192,6 +192,13 @@ bool Database::addTable(std::string filename) {
 			return false;
 		}
 	}
+	if (newTable->getId() <= tableID) {
+		std::cout << "Table with id " << newTable->getId() << " already exists" << endl;
+		return false;
+	}
+	if (newTable->getId() > tableID) {
+		tableID = newTable->getId() + 1;
+	}
 
 	if (!newTable->isLoaded()) {
 		delete newTable;
@@ -207,6 +214,12 @@ bool Database::deleteTable(int id) {
 
 	if (!table) return false;
 
+	for (int i = 0; i < relations.size(); i++) {
+		if (id == relations[i]->fromTable || id == relations[i]->toTable) {
+			std::cout << "This table is a part of a relation. Can't delete." << std::endl;
+			return false;
+		}
+	}
 
 	table->deleteFiles();
 	tables.removeValue(table);
