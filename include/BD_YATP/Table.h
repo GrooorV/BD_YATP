@@ -17,6 +17,14 @@ struct Node
 };
 
 
+struct ColumnRelation {
+	std::string columnName;
+	int toTable;
+	std::string displayColumn;
+};
+
+
+
 
 class Table
 {
@@ -77,6 +85,7 @@ private:
 	HashMap<int, Node*> rowById;
 	DynamicArray<Node*> rows; //массив строк в таблице
 
+	DynamicArray<ColumnRelation> relations;
 
 	unsigned int genNextId();
 

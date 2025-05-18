@@ -6,6 +6,14 @@
 #include "Info.h"
 #include "Globals.h"
 
+struct Relation {
+	int fromTable;
+	int toTable;
+	std::string fromColumn;
+	std::string toColumn;
+};
+
+
 class Database
 {
 public:
@@ -43,6 +51,8 @@ private:
 	std::string name;
 	bool loadBDfromFile(std::string);
 
+
+	DynamicArray<Relation> relations;
 	DynamicArray<Table*> tables; //массив таблиц в бд, динамический масси в
 	int tableID; // 
 };
