@@ -67,9 +67,13 @@ bool Database::saveBDInfotoFile()
 	}
 
 	file << name << '\n' << tableID << '\n';
-
+	file << tables.size() << '\n' << relations.size() << '\n';
 	for (int i = 0; i < tables.size(); i++) {
 		file << tables[i]->getFileName() << '\n';
+	}
+
+	for (int i = 0; i < relations.size(); i++) {
+		file << relations[i]->fromColumn << " " << relations[i]->fromTable << " " << relations[i]->toColumn << " " << relations[i]->toTable;
 	}
 
 	file.close();
@@ -98,21 +102,42 @@ bool Database::loadBDfromFile(std::string bname)
 	name = line;
 
 	std::getline(file, line);
-
 	if (!isValidInt(line)) return false;
-
 	tableID = std::stoi(line);
 
-	while (std::getline(file, line)) {
+	int tablesCount = 0;
+	int relationsCount = 0;
+
+
+
+	for (int i = 0; i < tablesCount; ++i) {
+		if (!std::getline(file, line)) return false;
+
 		Table* table = new Table(line);
 		if (!table->isLoaded()) {
-			for (int i = 0; i < tables.size(); i++) {
-				delete tables[i];
+			for (int j = 0; j < tables.size(); j++) {
+				delete tables[j];
 			}
+			tables.clear();
 			return false;
 		}
 		tables.append(table);
 	}
+
+	for (int i = 0; i < relationsCount; ++i) {
+		if (!std::getline(file, line)) return false;
+		std::istringstream iss(line);
+
+		int fromTable, toTable;
+		std::string fromColumn, toColumn;
+
+		if (!(iss >> fromColumn >> fromTable >> toColumn >> toTable)) {
+			std::cout << "Invalid relation format in file.\n";
+			return false;
+		}
+		CreateRelation(fromTable, fromColumn, toTable, toColumn);
+	}
+
 
 	return true;
 }
