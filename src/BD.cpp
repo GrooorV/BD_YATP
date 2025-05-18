@@ -73,7 +73,7 @@ bool Database::saveBDInfotoFile()
 	}
 
 	for (int i = 0; i < relations.size(); i++) {
-		file << relations[i]->fromColumn << " " << relations[i]->fromTable << " " << relations[i]->toColumn << " " << relations[i]->toTable;
+		file << relations[i]->fromColumn << " " << relations[i]->fromTable << " " << relations[i]->toColumn << " " << relations[i]->toTable << '\n';
 	}
 
 	file.close();
