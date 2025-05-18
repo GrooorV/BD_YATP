@@ -214,12 +214,13 @@ bool Table::isLoaded()
 
 // Методы для работы со строками таблицы 
 
+
 DynamicArray<std::string> parseStringArray(const std::string& input) {
     DynamicArray<std::string> result;
 
     int start = input.find_first_not_of(" \t\n\r");
     if (start == std::string::npos) {
-        return result; // Пустая строка
+        return result;
     }
     int end = input.find_last_not_of(" \t\n\r");
     std::string trimmed = input.substr(start, end - start + 1);
@@ -256,7 +257,6 @@ DynamicArray<std::string> parseStringArray(const std::string& input) {
             if (itemStart != std::string::npos) {
                 int itemEnd = item.find_last_not_of(" \t\n\r");
                 item = item.substr(itemStart, itemEnd - itemStart + 1);
-                // Удаляем кавычки, если они есть
                 if (item.size() >= 2 && item[0] == '"' && item.back() == '"') {
                     item = item.substr(1, item.size() - 2);
                 }
@@ -265,13 +265,10 @@ DynamicArray<std::string> parseStringArray(const std::string& input) {
         }
     }
     else {
-        // Одиночное значение (число или строка)
         if (trimmed.size() >= 2 && trimmed[0] == '"' && trimmed.back() == '"') {
-            // Это строка в кавычках
             result.append(trimmed.substr(1, trimmed.size() - 2));
         }
         else {
-            // Это число или строка без кавычек
             result.append(trimmed);
         }
     }
@@ -298,6 +295,7 @@ bool Table::parseValidIds(std::string& inp, InfoType type, const std::string& co
         }
         int tablenum = link->toTable;
         Table* cur = bd->findTable(link->toTable);
+
         if (!cur) {
             std::cerr << "Invalid relation. Cannot find the related table." << std::endl;
             return false;
@@ -336,25 +334,13 @@ bool Table::parseValidIds(std::string& inp, InfoType type, const std::string& co
 /* Проверяет распаршенный на части текст на соответствие типу данных, если не подходит - false */
 bool Table::isValidPart(const std::string& val, InfoType type) {
     switch (type) {
-    case InfoType::Int:
-        if (!isValidInt(val)) return false;
-        break;
-    case InfoType::Double:
-        if (!isValidDouble(val)) return false;
-        break;
-    case InfoType::Date:
-        if (!isValidDate(val)) return false;
-        break;
-    case InfoType::ManyInt:
-        if (!isValidList(val, '[', ']')) return false;
-        break;
-    case InfoType::String:
-        return true;
-        break;
-    default:
-        return false;
+        case InfoType::Int: return isValidInt(val);
+        case InfoType::Double: return isValidDouble(val);
+        case InfoType::Date: return isValidDate(val);
+        case InfoType::ManyInt: return isValidList(val, '[', ']');
+        case InfoType::String: return true;
+        default: return false;
     }
-    return true;
 }
 
 
@@ -952,6 +938,23 @@ bool Table::addRelation(std::string fromColumn, int toTable, std::string display
 
 }
 
+bool Table::deleteRelation(std::string fromColumn) {
+    if (!findRelation(fromColumn)) {
+        std::cout << "Relation for this column doesn't exist" << std::endl;
+        return false;
+    }
+    
+    for (int i = 0; i < relations.size(); i++) {
+        if (relations[i]->columnName == fromColumn) {
+            delete relations[i];
+            relations.removeAt(i);
+        }
+    }
+}
+
+
+
+
 ColumnRelation* Table::findRelation(std::string fromColumn) {
     for (int i = 0; i < relations.size(); i++) {
         if (relations[i]->columnName == fromColumn) {
@@ -989,8 +992,8 @@ std::string Table::findValue(int id, std::string name) {
 
 std::string Table::getRelationText(const std::string& ids, int columnNum, Database* bd) {
     DynamicArray<int> data;
-    size_t start = 0;
-    size_t end = 0;
+    int start = 0;
+    int end = 0;
 
     while (end < ids.size()) {
         while (start < ids.size() && std::isspace(ids[start])) {
@@ -1018,7 +1021,7 @@ std::string Table::getRelationText(const std::string& ids, int columnNum, Databa
     ColumnRelation* link = findRelation(nameOfColumns[columnNum]);
     int tablenum = link->toTable;
     Table* cur = bd->findTable(link->toTable);
-
+    if (!cur) return "Unknown connection";
     std::string res = "";
     for (int i = 0; i < data.size(); i++) {
         std::string val = cur->findValue(data[i], link->displayColumn);

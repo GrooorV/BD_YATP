@@ -82,6 +82,7 @@ public:
 
 	//Relations
 	bool addRelation(std::string fromColumn, int toTable, std::string displayColumn);
+
 	bool deleteRelation(std::string fromColumn);
 
 private:
