@@ -30,8 +30,14 @@ Table::Table(int number)
     curId = ID_START;
     //cur
     std::cout << "Enter a table name: "  << endl;
-    std::cout << "AddTable >> ";
-    std::getline(std::cin, tableName);
+    while (true)
+    {
+        std::cout << "AddTable >> ";
+        std::getline(std::cin, tableName);
+        if (!tableName.empty())
+            break;
+        std::cout << "its empty, try again" << endl;
+    }
     std::cout << "How many columns must be in table?" << endl;
     while (!usersRightInput)
     {
@@ -61,14 +67,23 @@ Table::Table(int number)
             seen = 0;
             std::cout << "enter a name of the " << i + 1 << " column" << endl;
             std::cout << "AddTable >> ";
-            getline(std::cin, nameOfColumns[i]);
-            for (int j = 0; j < i; j++)
+
+            if (!seen)
             {
-                if (nameOfColumns[j] == nameOfColumns[i])
+                getline(std::cin, nameOfColumns[i]);
+                if (nameOfColumns[i].empty())
                 {
-                    std::cout << "Column with that name already exists, try again" << endl;
-                    seen = 1;
-                    break;
+                    std::cout << "its empty, try again" << endl;
+                    continue;
+                }
+                for (int j = 0; j < i; j++)
+                {
+                    if (nameOfColumns[j] == nameOfColumns[i])
+                    {
+                        std::cout << "Column with that name already exists, try again" << endl;
+                        seen = 1;
+                        break;
+                    }
                 }
             }
             if (!seen)
