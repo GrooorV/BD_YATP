@@ -188,11 +188,13 @@ bool Database::addTable(std::string filename) {
 	{
 		if (name == tables[i]->getName())
 		{
+			delete newTable;
 			std::cout << "Table with name " << name << " already exists" << endl;
 			return false;
 		}
 	}
 	if (newTable->getId() <= tableID) {
+		delete newTable;
 		std::cout << "Table with id " << newTable->getId() << " already exists" << endl;
 		return false;
 	}
