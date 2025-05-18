@@ -445,6 +445,18 @@ bool Table::parseInfo(DynamicArray<Info*>& result, std::string input, Database* 
 /* Добавляет НОВУЮ строку в таблицу. Парсит, создаёт ноду */
 bool Table::addRow(std::string input, Database* bd)
 {
+
+    int l = 0;
+
+    for (int i = 0; i < columnAmount; i++) {
+        if (columns[i] == InfoType::ManyId || columns[i] == InfoType::Id) {
+            l++;
+        }
+    }
+    if (l != relations.size()) {
+        std::cout << "Not enough relations set" << std::endl;
+        return false;
+    }
     DynamicArray<Info*> result;
     if (!parseInfo(result, input, bd)) {
         return false;
@@ -812,7 +824,7 @@ void Table::PrintRow(Node* row, int number, Database* bd)
     for (int i = 0; i < columnAmount; i++) {
         int width = getColumnWidth(columns[i], bd, nameOfColumns[i]);
         std::string inp;
-        if (columns[i] != InfoType::Id && columns[i] != InfoType::ManyId) {
+        if ((columns[i] != InfoType::Id && columns[i] != InfoType::ManyId )|| relations.size()==0) {
             inp = row->dat[i]->getUserInput();
         }
         else {
@@ -887,10 +899,14 @@ void Table::PrintRows(int amount, Database* db)
 
 ColumnRelation::ColumnRelation(std::string column, int table, std::string display): columnName(column), toTable(table), displayColumn(display) {}
 
-void Table::addRelation(std::string fromColumn, int toTable, std::string displayColumn) {
+bool Table::addRelation(std::string fromColumn, int toTable, std::string displayColumn) {
+    if (findRelation(fromColumn)) {
+        std::cout << "Relation for this column already exists" << std::endl;
+        return false;
+    }
     ColumnRelation* newRelation = new ColumnRelation(fromColumn, toTable, displayColumn);
     relations.append(newRelation);
-
+    return true;
 
 }
 

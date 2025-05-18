@@ -102,7 +102,7 @@ public:
 	InfoType* getInfoTypes();
 	//Relations
 
-	void addRelation(std::string fromColumn, int toTable, std::string displayColumn);
+	bool addRelation(std::string fromColumn, int toTable, std::string displayColumn);
 private:
 
 	int num;
