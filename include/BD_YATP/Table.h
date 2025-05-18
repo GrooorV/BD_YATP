@@ -23,7 +23,7 @@ struct ColumnRelation {
 	std::string displayColumn;
 };
 
-
+class BD;
 
 
 class Table
@@ -36,6 +36,8 @@ public:
 	~Table();
 
 	bool addRow(std::string);
+
+	bool addRow(std::string, BD*);
 
 	bool deleteRow(int);
 
@@ -70,7 +72,11 @@ public:
 	bool isLoaded();
 
 	bool printRow(Node*);
-	//hey 
+	
+
+	//Relations
+
+	bool addRelation(std::string fromColumn, int toTable, std::string displayColumn);
 private:
 
 	int num;

@@ -4,7 +4,10 @@
 #include <fstream>
 #include <filesystem>
 #include "Validators.h"
+#include "BD.h"  
 
+
+в 
 Node::Node(unsigned int d, DynamicArray<Info*> list, int table) : id(d), dat(list), tabN(table) {}
 
 Node::~Node()
