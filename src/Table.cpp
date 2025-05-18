@@ -734,10 +734,13 @@ int Table::getColumnWidth(InfoType type, Database* bd, std::string column) {
     case InfoType::Id:         
     case InfoType::ManyId: {
         ColumnRelation* link = findRelation(column);
+        if (link != nullptr) {
         int tablenum = link->toTable;
         Table* cur = bd->findTable(link->toTable);
         InfoType inf = cur->getColumnType(link->displayColumn);
         return getColumnWidth(inf, bd, column);
+        }
+        return DEFAULT_COLUMN_WIDTH;
     }
     case InfoType::Double:
         return DOUBLE_COLUMN_WIDTH;
