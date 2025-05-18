@@ -73,6 +73,24 @@ public:
 
 	bool printRow(Node*);
 	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	std::string* getNames();
 
 	int getColumnAmount();
