@@ -460,7 +460,7 @@ void Table::editProcess(){
         std::cout<< "still want connecting things? [y/n]\n>";
         char op;
         std::cin>>op;
-        if (op!='Y' || op!='y')break;
+        if (op!='Y' && op!='y' )break;
     }return;
 }
 // здесь будет все, что бы проконтролировать ввод юзера
