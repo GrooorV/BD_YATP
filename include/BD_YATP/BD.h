@@ -50,6 +50,8 @@ public:
 
 	bool CreateRelation(int fromTable, const std::string& fromColumn, int toTable, const std::string& toColumn);
 
+	int getNumOftables();
+
 private:
 
 	bool isValid;

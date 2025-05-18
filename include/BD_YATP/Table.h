@@ -77,22 +77,6 @@ public:
 	
 	InfoType getColumnType(const std::string&);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	std::string* getNames();
 
 	int getColumnAmount();

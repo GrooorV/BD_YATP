@@ -149,6 +149,15 @@ bool Database::safeAddTable(std::string filename) {
 	}
 
 	Table* newTable = new Table(filename);
+	std::string name = newTable->getName();
+	for (int i = 0; i < tables.size(); i++)
+	{
+		if (name == tables[i]->getName())
+		{
+			std::cout << "Table with name " << name << " already exists" << endl;
+			return false;
+		}
+	}
 	if (!newTable->isLoaded()) {
 		delete newTable;
 		return false;
@@ -170,6 +179,15 @@ bool Database::safeAddTable(std::string filename) {
 
 bool Database::addTable(std::string filename) {
 	Table* newTable = new Table(filename);
+	std:: string name = newTable->getName();
+	for (int i = 0; i < tables.size(); i++)
+	{
+		if (name == tables[i]->getName())
+		{
+			std::cout << "Table with name " << name << " already exists" << endl;
+			return false;
+		}
+	}
 
 	if (!newTable->isLoaded()) {
 		delete newTable;
@@ -284,4 +302,9 @@ bool Database::CreateRelation(int fromTable, const std::string& fromColumn, int 
 	}
 
 	return false;
+}
+
+int Database::getNumOftables()
+{
+	return tables.size();
 }
