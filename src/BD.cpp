@@ -105,6 +105,7 @@ bool Database::loadBDfromFile(std::string bname)
 			return false;
 		}
 		tables.append(table);
+		table->other = &tables;
 	}
 
 	return true;

@@ -2,6 +2,7 @@
 #include "Info.h"
 #include "HashMap.h"
 #include "DynamicArray.h"
+#include <sstream>
 
 using namespace std;
 
@@ -21,6 +22,11 @@ struct Node
 class Table
 {
 public:
+	//публичный, что бы можно было записать из бд
+	DynamicArray<Table*>* other; // другие таблицы
+
+
+
 	Table(int number);
 
 	Table(std::string); //вызов консруктора для чтения из файла, пока пустой

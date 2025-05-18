@@ -415,46 +415,51 @@ void Table::editLink (int col, int row, int id){ links[(row-1)*columnAmount+col]
 
 // здесь будет все, что бы проконтролировать ввод юзера
 //
-void Table::findAndFill(std::string inp){
-    //"1 10 20 11 22" таблица, столбец строка исходной, столбец строка таргетированной
-    //"1 10 20 asd" таблица, столбец строка исходной, значение которой найти и поставить его айди 
+void Table::findAndFill(std::string inp) {
+    std::istringstream iss(inp);
+    std::string token;
+    DynamicArray<std::string> tokens;
 
-    // Убираем множественные пробелы, оставляя один
-    std::string tmpInp;
-    bool lastWasSpace = false;
-    for (char c : inp) {
-        if (c == ' ') {
-            if (!lastWasSpace) {
-                tmpInp += c;
-                lastWasSpace = true;
-            }
-        } else {
-            tmpInp += c;
-            lastWasSpace = false;
+    while (iss >> token) { tokens.append(token);}
+
+    int inpType = tokens.size();
+
+    if (inpType != 4 && inpType != 5) return;
+
+    // Общие три числа
+    int tableId = std::stoi(tokens[0]);
+    int rowIdx = std::stoi(tokens[1]);
+    int colIdx = std::stoi(tokens[2]);
+
+    Table* target;
+    for (int i=0; i<(*other).size(); i++){
+        Table* cur = (*other)[i];
+        if (cur->getId()==tableId) {target = cur;
+            break;}
+        return;}
+    if (!target) return;
+
+    Info* cell = rows[rowIdx]->dat[colIdx];
+
+    switch (inpType) {
+        case 5: {
+            std::string str = tokens[3];
+            int targetRow = std::stoi(tokens[4]);
+            int targetCol = std::stoi(tokens[5]);
+
+            // Логика для случая с 5 элементами (3 числа, строка, 2 числа)
+
+            break;
+        }
+        case 4: {
+            std::string searchValue = tokens[3];
+
+            // Логика для случая с 4 элементами (3 числа и строка)
+
+            break;
         }
     }
-
-    // Удаляем пробелы в начале и конце
-    size_t start = tmpInp.find_first_not_of(' ');
-    size_t end = tmpInp.find_last_not_of(' ');
-    if (start == std::string::npos) /* строка пуста */ return;
-    tmpInp = tmpInp.substr(start, end - start + 1);
-
-    int inpType = 0; // 4 - первый тип, 3 - второй
-
-    for (char c : tmpInp) if (c == ' ') inpType++;
-
-    switch(inpType){
-        case 4:
-            // найти таблицу, в ней столбец, строку и из них айди
-        return;
-        case 3:
-            // похоже, но тут пользуемся поиском по таблице
-        return;
-    }
-
 }
-
 
 void Table::updateLinks(){
 
