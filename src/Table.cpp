@@ -166,6 +166,16 @@ int Table::getRowId(int num) {
     return rows[num]->id;
 }
 
+InfoType Table::getColumnType(const std::string& column) {
+    for (int i = 0; i < columnAmount; i++) {
+        if (nameOfColumns[i] == column) {
+            return columns[i];
+        }
+    }
+    return InfoType::None;
+}
+
+
 /* Успешно ли загрузилась таблица */
 bool Table::isLoaded()
 {
@@ -717,12 +727,18 @@ bool Table::deleteFiles() {
 
 // Методы для красивого вывода
 
-int getColumnWidth(InfoType type) {
+int Table::getColumnWidth(InfoType type, Database* bd, std::string column) {
     switch (type) {
     case InfoType::Int: 
         return INT_COLUMN_WIDTH;
     case InfoType::Id:         
-        return ID_COLUMN_WIDTH;
+    case InfoType::ManyId: {
+        ColumnRelation* link = findRelation(column);
+        int tablenum = link->toTable;
+        Table* cur = bd->findTable(link->toTable);
+        InfoType inf = cur->getColumnType(link->displayColumn);
+        return getColumnWidth(inf, bd, column);
+    }
     case InfoType::Double:
         return DOUBLE_COLUMN_WIDTH;
     case InfoType::Date:
@@ -730,7 +746,6 @@ int getColumnWidth(InfoType type) {
     case InfoType::String:
         return STRING_COLUMN_WIDTH;
     case InfoType::ManyInt: 
-    case InfoType::ManyId:
         return MANY_COLUMN_WIDTH;
     default:
         return DEFAULT_COLUMN_WIDTH;
@@ -748,57 +763,63 @@ DynamicArray<std::string> wrapText(const std::string& text, int width) {
 }
 
 
-void printDivider(InfoType* columns, int amount) {
-    std::cout << "+" << std::string(ID_COLUMN_WIDTH, '-') << "+";
-    for (int i = 0; i < amount; i++) {
-        int width = getColumnWidth(columns[i]);
+void Table::printDivider(Database* bd) {
+    std::cout << "+" << std::string(NUM_COLUMN_WIDTH, '-') << "+";
+    for (int i = 0; i < columnAmount; i++) {
+        int width = getColumnWidth(columns[i], bd, nameOfColumns[i]);
         std::cout << std::string(width, '-') << "+";
     }
     std::cout << '\n';
 }
 
 
-void Table::printColumnNames() {
-    printDivider(columns, columnAmount);
-
-    std::cout << "|" << std::setw(ID_COLUMN_WIDTH) << std::left << "NUM" << "|";
+void Table::printColumnNames(Database* bd) {
+    printDivider(bd);
+    std::cout << "|" << std::setw(NUM_COLUMN_WIDTH) << std::left << "NUM" << "|";
     for (int i = 0; i < columnAmount; i++) {
-        int width = getColumnWidth(columns[i]);
+        int width = getColumnWidth(columns[i], bd, nameOfColumns[i]);
         std::cout << std::setw(width) << std::left << nameOfColumns[i] << "|";
     }
     std::cout << '\n';
 
-    printDivider(columns, columnAmount);
+    printDivider(bd);
 }
 
 
-void Table::PrintRow(Node* row, int number)
+void Table::PrintRow(Node* row, int number, Database* bd)
 {
     DynamicArray<DynamicArray<std::string>> wrappedColumns;
     int maxHeight = 1;
 
     for (int i = 0; i < columnAmount; i++) {
-        int width = getColumnWidth(columns[i]);
-        DynamicArray<std::string> lines = wrapText(row->dat[i]->getUserInput(), width);
-
+        int width = getColumnWidth(columns[i], bd, nameOfColumns[i]);
+        std::string inp;
+        if (columns[i] != InfoType::Id && columns[i] != InfoType::ManyId) {
+            inp = row->dat[i]->getUserInput();
+        }
+        else {
+            inp = getRelationText(row->dat[i]->getUserInput(), i, bd);
+        }
+        DynamicArray<std::string> lines = wrapText(inp, width);
         if (maxHeight < lines.size()) {
             maxHeight = lines.size();
         }
         wrappedColumns.append(std::move(lines));
     }
     
+
     for (int line = 0; line < maxHeight; line++) {
         std::cout << "|";
         if (line == 0) {
-            std::cout << std::setw(ID_COLUMN_WIDTH) << std::left << number;
+            std::cout << std::setw(NUM_COLUMN_WIDTH) << std::left << number;
         }
         else {
-            std::cout << std::setw(ID_COLUMN_WIDTH) << " ";
+            std::cout << std::setw(NUM_COLUMN_WIDTH) << " ";
         }
         std::cout << "|";
 
         for (int column = 0; column < columnAmount; column++) {
-            int width = getColumnWidth(columns[column]);
+            int width = getColumnWidth(columns[column], bd, nameOfColumns[column]);
 
             const auto& lines = wrappedColumns[column];
             if (line < lines.size()) {
@@ -811,35 +832,35 @@ void Table::PrintRow(Node* row, int number)
         }
         std::cout << '\n';
     }
-    printDivider(columns, columnAmount);
+    printDivider(bd);
 }
 
 
 // Общие методы вывода различные
 
-bool Table::printRow(Node* node) {
+bool Table::printRow(Node* node, Database* db) {
     if (!node) return false;
     if (!findRow(node->id)) return false;
 
-    PrintRow(node, 1);
+    PrintRow(node, 1, db);
     return true;
 }
 
-void Table::PrintAllRows()
+void Table::PrintAllRows(Database* db)
 {
     for (int i = 0; i < rows.size(); i++) {
-        PrintRow(rows[i], i+1);
+        PrintRow(rows[i], i+1, db);
     }
 }
 
-void Table::PrintRows(int amount)
+void Table::PrintRows(int amount, Database* db)
 {
     if (amount < 0) return;
     if (amount > rows.size()) {
         amount = rows.size();
     }
     for (int i = 0; i < amount; i++) {
-        PrintRow(rows[i], i+1);
+        PrintRow(rows[i], i+1, db);
     }
 
 }
@@ -878,4 +899,55 @@ std::string* Table::getNames()
 InfoType* Table::getInfoTypes()
 {
     return columns;
+}
+
+
+std::string Table::findValue(int id, std::string name) {
+    for (int i = 0; i < columnAmount; i++) {
+        if (nameOfColumns[i] == name) {
+            return findRow(id)->dat[i]->getUserInput();
+        }
+    }
+    return "";
+}
+
+
+std::string Table::getRelationText(const std::string& ids, int columnNum, Database* bd) {
+    DynamicArray<int> data;
+    size_t start = 0;
+    size_t end = 0;
+
+    while (end < ids.size()) {
+        while (start < ids.size() && std::isspace(ids[start])) {
+            start++;
+        }
+        if (start >= ids.size()) break;
+
+        end = ids.find(',', start);
+        if (end == std::string::npos) {
+            end = ids.size();
+        }
+        std::string_view numStr(ids.data() + start, end - start);
+
+        int num = 0;
+        for (char c : numStr) {
+            if (c >= '0' && c <= '9') { 
+                num = num * 10 + (c - '0');
+            }
+        }
+        data.append(num);
+
+        start = end + 1;
+    }
+
+    ColumnRelation* link = findRelation(nameOfColumns[columnNum]);
+    int tablenum = link->toTable;
+    Table* cur = bd->findTable(link->toTable);
+
+    std::string res = "";
+    for (int i = 0; i < data.size(); i++) {
+        res += cur->findValue(data[i], link->displayColumn);
+    }
+    return res;
+
 }

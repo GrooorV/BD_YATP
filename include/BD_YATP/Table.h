@@ -47,13 +47,15 @@ public:
 
 	Node* findRow(int);
 
+	std::string findValue(int, std::string);
+
 	DynamicArray<Node*> findInRows(std::string);
 
-	void PrintAllRows();
+	void PrintAllRows(Database*);
 
-	void PrintRows(int);
+	void PrintRows(int, Database*);
 
-	void printColumnNames();
+	void printColumnNames(Database*);
 
 	std::string getFileName();
 
@@ -71,9 +73,9 @@ public:
 
 	bool isLoaded();
 
-	bool printRow(Node*);
+	bool printRow(Node*, Database*);
 	
-
+	InfoType getColumnType(const std::string&);
 
 
 
@@ -119,7 +121,16 @@ private:
 
 	unsigned int genNextId();
 
-	void PrintRow(Node*, int);
+
+
+	void PrintRow(Node*, int, Database*);
+
+	void printDivider(Database*);
+
+	int getColumnWidth(InfoType type, Database* db, std::string );
+
+	std::string getRelationText(const std::string&, int, Database*);
+
 
 	bool parseInfo(DynamicArray<Info*>&, std::string, Database*);
 

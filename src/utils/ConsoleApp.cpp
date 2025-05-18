@@ -407,8 +407,8 @@ void ConsoleApplication::proccessBD(std::stringstream& ss)
                             if (node != nullptr)
                             {
                                 Table* table = database->findTable(std::stoi(rowID) / 10000000);
-                                table->printColumnNames();
-                                table->printRow(node);
+                                table->printColumnNames(database);
+                                table->printRow(node, database);
                             }
                             else {
                                 std::cout << "couldn't find row with this ID: " << rowID << std::endl;
@@ -478,18 +478,18 @@ void ConsoleApplication::proccessTable(std::stringstream& ss)
                     case 'p':
                         if (action == "print")
                         {
-                            table->printColumnNames();
-                            table->PrintAllRows();
+                            table->printColumnNames(database);
+                            table->PrintAllRows(database);
                         }
                         else {
                             if (action == "printnames")
                             {
-                                table->printColumnNames();
+                                table->printColumnNames(database);
                             }
                             else {
                                 if (action == "printallrows")
                                 {
-                                    table->PrintAllRows();
+                                    table->PrintAllRows(database);
                                 }
                                 else {
                                     if (action == "printrow")
@@ -541,10 +541,10 @@ void ConsoleApplication::proccessTable(std::stringstream& ss)
                         {
                             std::string sort;
                             ss >> sort;
-                            table->printColumnNames();
+                            table->printColumnNames(database);
                             if (table->sortBy(sort))
                             {
-                                table->PrintAllRows();
+                                table->PrintAllRows(database);
                                 std::cout << std::endl;
                             }
                             else {
@@ -594,11 +594,11 @@ void ConsoleApplication::proccessTable(std::stringstream& ss)
                             std::string find;
                             ss >> find;
                             DynamicArray<Node*> n = table->findInRows(find);
-                            table->printColumnNames();
+                            table->printColumnNames(database);
                             if (n.size() > 0)
                             {
                                 for (int i = 0; i < n.size(); i++) {
-                                    table->printRow(n[i]);
+                                    table->printRow(n[i], database);
                                 }
                                 std::cout << "\n";
                             }
@@ -708,10 +708,10 @@ void ConsoleApplication::deleteRowID(Table* table, std::string rowID)
     {
         if (std::stoi(rowID) > 0)
         {
-            table->printColumnNames();
+            table->printColumnNames(database);
             if (table->deleteRow(std::stoi(rowID) - 1))
             {
-                table->PrintAllRows();
+                table->PrintAllRows(database);
                 std::cout << std::endl;
             }
             else {
@@ -737,8 +737,8 @@ void ConsoleApplication::printRowID(Table* table, std::string rowID)
             Node* nuzh = table->findRow(std::stoi(rowID));
             if (nuzh != nullptr)
             {
-                table->printColumnNames();
-                table->printRow(nuzh);
+                table->printColumnNames(database);
+                table->printRow(nuzh, database);
             }
             else {
                 std::cout << "Couldn't find row with this number: " << rowID << std::endl;
@@ -765,8 +765,8 @@ void ConsoleApplication::addMany(Table* table, int ID)
 
         if (table->addRow(newRow, database))
         {
-            table->printColumnNames(); // потом можно будет убрать
-            table->PrintAllRows(); // потом можно будет убрать
+            table->printColumnNames(database); // потом можно будет убрать
+            table->PrintAllRows(database); // потом можно будет убрать
             std::cout << "Successfully added new row to table: " << ID << std::endl;
         }
         else {
@@ -789,10 +789,10 @@ void ConsoleApplication::deleteMany(Table* table, int ID)
         {
             if (std::stoi(newID) > 0)
             {
-                table->printColumnNames();
+                table->printColumnNames(database);
                 if (table->deleteRow(std::stoi(newID)))
                 {
-                    table->PrintAllRows();
+                    table->PrintAllRows(database);
                     std::cout << std::endl;
                 }
                 else {

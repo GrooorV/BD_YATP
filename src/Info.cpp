@@ -4,7 +4,6 @@
 Info::Info(InfoType t, const std::string& input) : type(t), userInput(input) {
     switch (type) {
         case InfoType::Int:
-        case InfoType::Id:
             data.i = std::stoi(input);
             break;
         case InfoType::Double:
@@ -15,8 +14,9 @@ Info::Info(InfoType t, const std::string& input) : type(t), userInput(input) {
             data.s = new std::string(input);
             break;
         case InfoType::ManyId:
-        case InfoType::ManyInt: {
-            data.vi = new DynamicArray<int>();
+        case InfoType::ManyInt:
+        case InfoType::Id: {
+            data.vi = new DynamicArray<int>;
             size_t start = 0;
             size_t end = 0;
             // фан факт без трайев не будет работать
@@ -37,6 +37,7 @@ Info::Info(InfoType t, const std::string& input) : type(t), userInput(input) {
                     data.vi->append(value);
                 } catch (...) {}
             }
+
             break;
         }
         case InfoType::None:
@@ -52,6 +53,7 @@ Info::~Info() {
             break;
         case InfoType::ManyInt:
         case InfoType::ManyId:
+        case InfoType::Id:
             delete data.vi;
             break;
         default:
@@ -64,7 +66,7 @@ InfoType Info::getType() const {
 }
 
 int Info::getInt() const {
-    if (type == InfoType::Int || type == InfoType::Id) return data.i;
+    if (type == InfoType::Int) return data.i;
     if (type == InfoType::Date) {
     int year = std::stoi(data.s->substr(0, 4));
     int month = std::stoi(data.s->substr(5, 2));
@@ -78,7 +80,7 @@ const std::string& Info::getString() const {
     if (type == InfoType::String || type == InfoType::Date) return *data.s;
 }
 const DynamicArray<int>& Info::getIntArray() const {
-    if (type == InfoType::ManyInt) return *data.vi;
+    if (type == InfoType::ManyInt || type == InfoType::Id) return *data.vi;
 }
 std::string Info::getUserInput() const {
     return userInput;

@@ -177,8 +177,8 @@ void Database::printTables() {
 void Database::printFullTables() {
 	for (int i = 0; i < tables.size(); i++) {
 		std::cout << tables[i]->getId() << " " << tables[i]->getName() << '\n';
-		tables[i]->printColumnNames();
-		tables[i]->PrintAllRows();
+		tables[i]->printColumnNames(this);
+		tables[i]->PrintAllRows(this);
 		std::cout << std::endl;
 	}
 }
