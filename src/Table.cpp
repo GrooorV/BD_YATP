@@ -435,11 +435,11 @@ bool Table::addRow(std::string input, Database* bd)
 
 //////////////////////////////////////////////////////////
 /* Редактирует строку, заменяя её на полностью новую */
-/*bool Table::editRow(int id, std::string input) {
+bool Table::editRow(int id, std::string input) {
     if (!findRow(id)) return false;
 
     DynamicArray<Info*> res;
-    if (!parseInfo(res, input)) return false;
+    //if (!parseInfo(res, input)) return false;
 
     Node* editedNode = new Node(id, res, num);
     for (int i = 0; i < rows.size(); i++) {
@@ -451,9 +451,9 @@ bool Table::addRow(std::string input, Database* bd)
     rowById.erase(id);
     rowById.insert(id, editedNode);
 }
-*/
+
 /* Редактирует строку, изменяя только в определённой column */
-/*bool Table::editRowColumn(int id, std::string column, std::string input) {
+bool Table::editRowColumn(int id, std::string column, std::string input) {
     for (int i = 0; i < columnAmount; i++) {
         if (nameOfColumns[i] == column) {
             if (isValidPart(input, columns[i])) {
@@ -482,7 +482,7 @@ bool Table::deleteRow(int id) {
     rows.removeValue(node);
     delete node;
 }
-*/
+
 ////////////////////////////////////////////////////////////
 
 bool Table::sortBy(std::string name) {

@@ -516,7 +516,7 @@ void ConsoleApplication::proccessTable(std::stringstream& ss)
                             {
                                 toAdd += tmp + " ";
                             }
-                            if (table->addRow(toAdd))
+                            if (table->addRow(toAdd, database))
                             {
                                 std::cout << "Successfully added new row to table: " << ID << std::endl;
                             }
@@ -763,7 +763,7 @@ void ConsoleApplication::addMany(Table* table, int ID)
         getline(std::cin, newRow);
         if (newRow == "0") return;
 
-        if (table->addRow(newRow))
+        if (table->addRow(newRow, database))
         {
             table->printColumnNames(); // потом можно будет убрать
             table->PrintAllRows(); // потом можно будет убрать
