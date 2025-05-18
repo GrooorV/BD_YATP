@@ -29,7 +29,7 @@ Table::Table(int number)
     num = number;
     curId = ID_START;
     //cur
-    std::cout << "Enter a table name: " << curId / 100000 << endl;
+    std::cout << "Enter a table name: "  << endl;
     std::cout << "AddTable >> ";
     std::getline(std::cin, tableName);
     std::cout << "How many columns must be in table?" << endl;
@@ -53,12 +53,27 @@ Table::Table(int number)
     std::cout << "1 - int, 2 - double, 3 - string, 4 - date, 5 - linked, 6 - ManyLinked, 7 - ManyInt." << endl;
     nameOfColumns = new std::string[columnAmount];
     columns = new InfoType[columnAmount];
+    bool seen = 0;
     for (int i = 0; i < columnAmount; i++)
     {
-        std::cout << "enter a name of the " << i + 1 << " column" << endl;
-        std::cout << "AddTable >> ";
-        getline( std::cin, nameOfColumns[i] );
-
+        while (true)
+        {
+            seen = 0;
+            std::cout << "enter a name of the " << i + 1 << " column" << endl;
+            std::cout << "AddTable >> ";
+            getline(std::cin, nameOfColumns[i]);
+            for (int j = 0; j < i; j++)
+            {
+                if (nameOfColumns[j] == nameOfColumns[i])
+                {
+                    std::cout << "Column with that name already exists, try again" << endl;
+                    seen = 1;
+                    break;
+                }
+            }
+            if (!seen)
+                break;
+        }
         std::cout << "What is type of info in the " << i + 1 << " column?" << endl;
         do {
             usersRightInput = 0;

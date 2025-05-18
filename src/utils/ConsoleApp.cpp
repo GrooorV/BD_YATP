@@ -29,7 +29,6 @@ void ConsoleApplication::run() {
             }
             else {
                 std::cout << "Unknown command: " << action << std::endl;
-                return;
             }
             break;
         case 'h':
@@ -38,7 +37,6 @@ void ConsoleApplication::run() {
             }
             else {
                 std::cout << "Unknown command: " << action << std::endl;
-                return;
             }
             break;
         case 'b':
@@ -47,7 +45,6 @@ void ConsoleApplication::run() {
             }
             else {
                 std::cout << "Unknown command: " << action << std::endl;
-                return;
             }
             break;
         case 't':
@@ -56,7 +53,6 @@ void ConsoleApplication::run() {
             }
             else {
                 std::cout << "Unknown command: " << action << std::endl;
-                return;
             }
             break;
         default:
@@ -114,9 +110,6 @@ void ConsoleApplication::HELP()
         "\n"
         "\n"
         "   BD SAVE                                              Saves database's info and all its table's info\n"
-        "\n"
-        "\n"
-        "   BD SAVEINFO                                          Saves only database's info\n"
         "\n"
         "\n"
         "   BD PRINT                                             Prints all database's tables with its numbers, names and rows (info)\n"
@@ -360,22 +353,7 @@ void ConsoleApplication::proccessBD(std::stringstream& ss)
             }
         }
         else {
-            if (action == "saveinfo")
-            {
-                if (database != nullptr)
-                {
-                    if (database->saveBDInfotoFile())
-                        std::cout << "Database info was successfully saved" << endl;
-                    else
-                        std::cout << "Couldn't save database info to file" << endl;
-                }
-                else {
-                    std::cout << "Database hasn't been created. Please, create one" << std::endl;
-                }
-            }
-            else {
-                std::cout << "unknown Type of operation with database: " << action << std::endl;
-            }
+            std::cout << "unknown Type of operation with database: " << action << std::endl;
         }
         break;
 
