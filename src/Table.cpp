@@ -138,7 +138,7 @@ Table::~Table()
 unsigned int Table::genNextId()
 {
     if ((curId + 1) / ID_AMOUNT != num) {
-        std::cout << "OVERFLOW??" << std::endl; // нужно додумать 
+        //std::cout << "OVERFLOW??" << std::endl; // нужно додумать 
         return ++curId;
     }
     return ++curId;
@@ -176,8 +176,6 @@ bool Table::isLoaded()
 
 
 // Методы для работы со строками таблицы 
-
-/* Проверяет распаршенный на части текст на соответствие типу данных, если не подходит - false */
 
 DynamicArray<std::string> parseStringArray(const std::string& input) {
     DynamicArray<std::string> result;
@@ -249,7 +247,7 @@ bool Table::parseValidIds(std::string& inp, InfoType type, const std::string& co
     std::string res = "";
     DynamicArray<std::string> tokens = parseStringArray(inp);
 
-    if (tokens.size() > 1 || type == InfoType::Id) {
+    if (tokens.size() > 1 && type == InfoType::Id) {
         return false;
     }
     for (int i = 0; i < tokens.size(); i++) {
@@ -298,7 +296,7 @@ bool Table::parseValidIds(std::string& inp, InfoType type, const std::string& co
 }
 
 
-
+/* Проверяет распаршенный на части текст на соответствие типу данных, если не подходит - false */
 bool Table::isValidPart(const std::string& val, InfoType type) {
     switch (type) {
     case InfoType::Int:
@@ -393,7 +391,6 @@ bool Table::parseInfo(DynamicArray<Info*>& result, std::string input, Database* 
     }
     */
     if (tokens.size() != columnAmount) return false;
-
     // Проверяем каждый "токен" на соответствие типу данных. Если соответствует, добавляем в массив, иначе возвращаем false
     for (int i = 0; i < columnAmount; ++i) {
         std::string& val = tokens[i];
@@ -424,7 +421,9 @@ bool Table::parseInfo(DynamicArray<Info*>& result, std::string input, Database* 
 bool Table::addRow(std::string input, Database* bd)
 {
     DynamicArray<Info*> result;
-    if (!parseInfo(result, input, bd)) return false;
+    if (!parseInfo(result, input, bd)) {
+        return false;
+    }
     Node* newNode = new Node(genNextId(), result, num);
 
     rows.append(newNode);

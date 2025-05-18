@@ -220,8 +220,9 @@ bool Database::CreateRelation(int fromTable, const std::string& fromColumn, int 
 
 	for (first = 0; first < fromAmount; first++) //тот ли номер?
 	{
-		if (fromAllNames[first] == fromColumn)
+		if (fromAllNames[first] == fromColumn) {
 			break;
+		}
 	}
 
 	if (first == fromAmount) // верно ли?
@@ -245,7 +246,7 @@ bool Database::CreateRelation(int fromTable, const std::string& fromColumn, int 
 	InfoType* colunmsFromTable = fromtable->getInfoTypes();
 	InfoType* colunmsToTable = totable->getInfoTypes();
 
-	if (*colunmsFromTable == InfoType::Id || *colunmsFromTable == InfoType::ManyId)
+	if (colunmsFromTable[first] == InfoType::Id || colunmsFromTable[first] == InfoType::ManyId)
 	{
 		Relation* link = new Relation(fromTable, toTable, fromColumn, toColumn);
 		relations.append(link);
