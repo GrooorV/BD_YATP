@@ -422,6 +422,7 @@ void Table::initLinks (){
         }
     if (tarId) std::cout<< "done. now this table linked with "<< tabName<<".\n";
     else std::cout<< "invalid name";
+    return;
 }
 
 void Table::editProcess(){

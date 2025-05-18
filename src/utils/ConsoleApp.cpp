@@ -453,7 +453,7 @@ void ConsoleApplication::proccessTable(std::stringstream& ss)
                                     {
                                         std::string rowID;
                                         ss >> rowID;
-                                        printRowID(table, rowID); //не уверен, что для пользователя это хорошо
+                                        printRowID(table, rowID); //пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
                                     }
                                     else {
                                         std::cout << "Unknown Type of operation with table: " << action << std::endl;
@@ -531,7 +531,7 @@ void ConsoleApplication::proccessTable(std::stringstream& ss)
                         {
                             std::string rowID;
                             ss >> rowID;
-                            deleteRowID(table, rowID); //не уверен, что для пользователя это хорошо
+                            deleteRowID(table, rowID); //пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
                         }
                         else {
                             if (action == "deletemany")
@@ -659,6 +659,7 @@ void ConsoleApplication::proccessTable(std::stringstream& ss)
     }
 }
 
+
 void ConsoleApplication::deleteRowID(Table* table, std::string rowID)
 {
     if (isValidInt(rowID))
@@ -722,8 +723,8 @@ void ConsoleApplication::addMany(Table* table, int ID)
 
         if (table->addRow(newRow))
         {
-            table->printColumnNames(); // потом можно будет убрать
-            table->PrintAllRows(); // потом можно будет убрать
+            table->printColumnNames(); // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+            table->PrintAllRows(); // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
             std::cout << "Successfully added new row to table: " << ID << std::endl;
         }
         else {
