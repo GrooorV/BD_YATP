@@ -397,6 +397,25 @@ DynamicArray<Node*> Table::findInRows(std::string subs) {
     return nodes;
 }
 
+Info* Table::getTarCell(int Id){
+    if (!tarId)return nullptr;
+    Table* target;
+    for (int i=0; i<(*other).size(); i++){
+        Table* cur = (*other)[i];
+        if (cur->getId()==tarId) {target = cur;
+            break;}
+        }
+    
+    for (int i=0; i<(target->rows).size(); i++)
+    if ((target->rows)[i]->id==Id){
+        for (int i=0; i<target->nameOfColumns->size(); i++){
+            if (target->nameOfColumns[i]==tarCol)
+            return (target->rows)[i]->dat[i];}
+        }
+
+}
+
+
 Info* Table::getCell(int col,int row){
     Info* cell = rows[row]->dat[col];
     if (cell)return cell;
@@ -421,9 +440,15 @@ void Table::initLinks (){
             break;}
         }
     if (tarId) std::cout<< "done. now this table linked with "<< tabName<<".\n";
-    else std::cout<< "invalid name";
+    else {std::cout<< "invalid name";return;}
+
+    std::cout<< "enter column name\n>";
+    std::cin>>tarCol;
+    std::cout<< "thx\n";
     return;
 }
+
+
 
 void Table::editProcess(){
     for(;;){

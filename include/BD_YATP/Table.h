@@ -55,7 +55,7 @@ public:
 	void initLinks ();
 
 	void editProcess();
-	
+
 	void findAndFill(std::string);
 
 	void updateLinks();
@@ -74,6 +74,8 @@ public:
 
 	Info* getCell(int,int);
 
+	Info* getTarCell(int); 
+
 	std::string getName();
 
 	bool isLoaded();
@@ -89,6 +91,8 @@ private:
 	
 	DynamicArray<int> links; // "таблица связей"
 	int tarId; //таргет на таблицу
+	std::string tarCol;
+
 
 	bool isValid;
 	std::string tableName;
