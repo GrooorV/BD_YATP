@@ -307,7 +307,7 @@ bool Database::CreateRelation(int fromTable, const std::string& fromColumn, int 
 DynamicArray<Relation*> Database::getRelations() {
 	return relations;
 }
-}
+
 
 int Database::getNumOftables()
 {
