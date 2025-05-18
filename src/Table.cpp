@@ -816,8 +816,6 @@ void Table::PrintRow(Node* row, int number)
 }
 
 
-
-
 // Общие методы вывода различные
 
 bool Table::printRow(Node* node) {
@@ -847,9 +845,6 @@ void Table::PrintRows(int amount)
 
 }
 
-
-
-
 // Связи
 
 ColumnRelation::ColumnRelation(std::string column, int table, std::string display): columnName(column), toTable(table), displayColumn(display) {}
@@ -869,57 +864,6 @@ ColumnRelation* Table::findRelation(std::string fromColumn) {
     }
     return nullptr;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 int Table::getColumnAmount()

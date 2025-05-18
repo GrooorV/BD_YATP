@@ -249,7 +249,7 @@ bool Database::CreateRelation(int fromTable, const std::string& fromColumn, int 
 	{
 		Relation* link = new Relation(fromTable, toTable, fromColumn, toColumn);
 		relations.append(link);
-		//return fromtable->addRelation(fromColumn, toTable, toColumn);
+		fromtable->addRelation(fromColumn, toTable, toColumn);
 		return true; //убрать
 	}
 	else {
