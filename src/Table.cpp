@@ -28,15 +28,18 @@ Table::Table(int number)
     bool usersRightInput = 0;
     num = number;
     curId = ID_START;
-    //cur
+    bool seenTable = 0;
     std::cout << "Enter a table name: "  << endl;
     while (true)
     {
         std::cout << "AddTable >> ";
         std::getline(std::cin, tableName);
         if (!tableName.empty())
+        {
             break;
         std::cout << "its empty, try again" << endl;
+        }
+
     }
     std::cout << "How many columns must be in table?" << endl;
     while (!usersRightInput)
@@ -68,22 +71,19 @@ Table::Table(int number)
             std::cout << "enter a name of the " << i + 1 << " column" << endl;
             std::cout << "AddTable >> ";
 
-            if (!seen)
+            getline(std::cin, nameOfColumns[i]);
+            if (nameOfColumns[i].empty())
             {
-                getline(std::cin, nameOfColumns[i]);
-                if (nameOfColumns[i].empty())
+                std::cout << "its empty, try again" << endl;
+                continue;
+            }
+            for (int j = 0; j < i; j++)
+            {
+                if (nameOfColumns[j] == nameOfColumns[i])
                 {
-                    std::cout << "its empty, try again" << endl;
-                    continue;
-                }
-                for (int j = 0; j < i; j++)
-                {
-                    if (nameOfColumns[j] == nameOfColumns[i])
-                    {
-                        std::cout << "Column with that name already exists, try again" << endl;
-                        seen = 1;
-                        break;
-                    }
+                    std::cout << "Column with that name already exists, try again" << endl;
+                    seen = 1;
+                    break;
                 }
             }
             if (!seen)
@@ -955,7 +955,6 @@ ColumnRelation* Table::findRelation(std::string fromColumn) {
     }
     return nullptr;
 }
-
 
 int Table::getColumnAmount()
 {
