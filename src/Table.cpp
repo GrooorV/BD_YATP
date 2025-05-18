@@ -946,7 +946,12 @@ std::string Table::getRelationText(const std::string& ids, int columnNum, Databa
 
     std::string res = "";
     for (int i = 0; i < data.size(); i++) {
-        res += cur->findValue(data[i], link->displayColumn);
+        if (i == 0){
+            res += cur->findValue(data[i], link->displayColumn);
+        }
+        else {
+            res += ", " + cur->findValue(data[i], link->displayColumn);
+        }
     }
     return res;
 
