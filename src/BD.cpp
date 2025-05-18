@@ -108,7 +108,11 @@ bool Database::loadBDfromFile(std::string bname)
 	int tablesCount = 0;
 	int relationsCount = 0;
 
+	if (!std::getline(file, line) || !isValidInt(line)) return false;
+	tablesCount = std::stoi(line);
 
+	if (!std::getline(file, line) || !isValidInt(line)) return false;
+	relationsCount = std::stoi(line);
 
 	for (int i = 0; i < tablesCount; ++i) {
 		if (!std::getline(file, line)) return false;
