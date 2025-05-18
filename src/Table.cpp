@@ -245,6 +245,9 @@ bool Table::parseValidIds(std::string& inp, InfoType type, const std::string& co
     std::string res = "";
     DynamicArray<std::string> tokens = parseStringArray(inp);
 
+    if (tokens.size() > 1 || type == InfoType::Id) {
+        return false;
+    }
     for (int i = 0; i < tokens.size(); i++) {
         std::string val = tokens[i];
 
@@ -285,6 +288,7 @@ bool Table::parseValidIds(std::string& inp, InfoType type, const std::string& co
         }
 
     }
+
     inp = res;
     return true;
 }
