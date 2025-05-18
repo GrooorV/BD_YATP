@@ -116,10 +116,14 @@ Table::~Table()
     for (int i = 0; i < rows.size(); i++) {
         delete rows[i];
     }
+    for (int i = 0; i < relations.size(); i++) {
+        delete relations[i];
+    }
 
     rowById.clear();
     delete[] nameOfColumns;
     delete[] columns;
+    
 
 }
 
@@ -150,6 +154,14 @@ int Table::getId()
     return num;
 }
 
+int Table::getRowId(int num) {
+    if (num > rows.size()) {
+        return -1;
+    }
+
+    return rows[num]->id;
+}
+
 /* Успешно ли загрузилась таблица */
 bool Table::isLoaded()
 {
@@ -162,10 +174,126 @@ bool Table::isLoaded()
 // Методы для работы со строками таблицы 
 
 /* Проверяет распаршенный на части текст на соответствие типу данных, если не подходит - false */
-bool isValidPart(const std::string& val, InfoType type) { 
+
+DynamicArray<std::string> parseStringArray(const std::string& input) {
+    DynamicArray<std::string> result;
+
+    int start = input.find_first_not_of(" \t\n\r");
+    if (start == std::string::npos) {
+        return result; // Пустая строка
+    }
+    int end = input.find_last_not_of(" \t\n\r");
+    std::string trimmed = input.substr(start, end - start + 1);
+
+    // Если строка начинается с [ и заканчивается ], это массив
+    if (trimmed.size() >= 2 && trimmed[0] == '[' && trimmed.back() == ']') {
+        std::string content = trimmed.substr(1, trimmed.size() - 2);
+        bool inQuotes = false;
+        int startPos = 0;
+
+        for (int i = 0; i < content.size(); ++i) {
+            if (content[i] == '"') {
+                inQuotes = !inQuotes;
+            }
+            else if (!inQuotes && content[i] == ',') {
+                std::string item = content.substr(startPos, i - startPos);
+
+                int itemStart = item.find_first_not_of(" \t\n\r");
+                if (itemStart != std::string::npos) {
+                    int itemEnd = item.find_last_not_of(" \t\n\r");
+                    item = item.substr(itemStart, itemEnd - itemStart + 1);
+                    if (item.size() >= 2 && item[0] == '"' && item.back() == '"') {
+                        item = item.substr(1, item.size() - 2);
+                    }
+                    result.append(item);
+                }
+                startPos = i + 1;
+            }
+        }
+
+        if (startPos < content.size()) {
+            std::string item = content.substr(startPos);
+            int itemStart = item.find_first_not_of(" \t\n\r");
+            if (itemStart != std::string::npos) {
+                int itemEnd = item.find_last_not_of(" \t\n\r");
+                item = item.substr(itemStart, itemEnd - itemStart + 1);
+                // Удаляем кавычки, если они есть
+                if (item.size() >= 2 && item[0] == '"' && item.back() == '"') {
+                    item = item.substr(1, item.size() - 2);
+                }
+                result.append(item);
+            }
+        }
+    }
+    else {
+        // Одиночное значение (число или строка)
+        if (trimmed.size() >= 2 && trimmed[0] == '"' && trimmed.back() == '"') {
+            // Это строка в кавычках
+            result.append(trimmed.substr(1, trimmed.size() - 2));
+        }
+        else {
+            // Это число или строка без кавычек
+            result.append(trimmed);
+        }
+    }
+
+    return result;
+}
+
+
+bool Table::parseValidIds(std::string& inp, InfoType type, const std::string& columnName, Database* bd) {
+    std::string res = "";
+    DynamicArray<std::string> tokens = parseStringArray(inp);
+
+    for (int i = 0; i < tokens.size(); i++) {
+        std::string val = tokens[i];
+
+
+        ColumnRelation* link = findRelation(columnName);
+        int tablenum = link->toTable;
+        if (!link) {
+            std::cerr << "Invalid relation" << std::endl;
+            return false;
+        }
+        Table* cur = bd->findTable(link->toTable);
+        if (!cur) {
+            std::cerr << "Invalid relation. Cannot find the related table." << std::endl;
+            return false;
+        }
+        int id = 0;
+        if (isValidInt(val)) {
+            id = cur->getRowId(std::stoi(val));
+            if (id == -1) {
+                std::cout << "Table " << link->toTable << " doesn't have row number " << val << std::endl;
+                return false;
+            }
+
+        }
+        else {
+            id = cur->findInColumn(link->displayColumn, val);
+            if (id == -1) {
+                std::cout << "Invalid cell value. Table " << link->toTable << " doesn't contain " << val << " in column " << link->displayColumn << std::endl;
+                return false;
+            }
+        }
+
+        if (i == 0) {
+            res += std::to_string(id);
+        }
+        else {
+            res += "," + std::to_string(id);
+        }
+
+    }
+    inp = res;
+    return true;
+}
+
+
+
+bool Table::isValidPart(const std::string& val, InfoType type) {
     switch (type) {
     case InfoType::Int:
-    case InfoType::Id:
         if (!isValidInt(val)) return false;
         break;
     case InfoType::Double:
@@ -177,9 +305,6 @@ bool isValidPart(const std::string& val, InfoType type) {
     case InfoType::ManyInt:
         if (!isValidList(val, '[', ']')) return false;
         break;
-    case InfoType::ManyId:
-        if (!isValidList(val, '(', ')')) return false;
-        break;
     case InfoType::String:
         return true;
         break;
@@ -189,8 +314,10 @@ bool isValidPart(const std::string& val, InfoType type) {
     return true;
 }
 
+
+
 /* Парсит строку от пользователя в массив result (этот массив сразу в node кладётся*/
-bool Table::parseInfo(DynamicArray<Info*>& result, std::string input) {
+bool Table::parseInfo(DynamicArray<Info*>& result, std::string input, Database* bd) {
     int pos = 0, start = 0, tokenCount = 0;
 
     //сначала разбиваем по пробелам на "токены", проверяем их количество
@@ -261,26 +388,35 @@ bool Table::parseInfo(DynamicArray<Info*>& result, std::string input) {
 
     // Проверяем каждый "токен" на соответствие типу данных. Если соответствует, добавляем в массив, иначе возвращаем false
     for (int i = 0; i < columnAmount; ++i) {
-        const std::string& val = tokens[i];
+        std::string& val = tokens[i];
         InfoType type = columns[i];
 
-        if (!isValidPart(val, type)) {
-            for (int j = 0; j < i; j++) {
-                delete result[j];
-            }
-            return false;
+        if (type == InfoType::Id || type == InfoType::ManyId) {
+            if (!parseValidIds(val, type, nameOfColumns[i], bd)) {
+                for (int j = 0; j < i; j++) {
+                    delete result[j];
+                }
+                return false;
+            };
         }
-
+        else {
+            if (!isValidPart(val, type)) {
+                for (int j = 0; j < i; j++) {
+                    delete result[j];
+                }
+                return false;
+            }
+        }
         result.append(new Info(type, val));
     }
     return true;
 }
 
 /* Добавляет НОВУЮ строку в таблицу. Парсит, создаёт ноду */
-bool Table::addRow(std::string input)
+bool Table::addRow(std::string input, Database* bd)
 {
     DynamicArray<Info*> result;
-    if (!parseInfo(result, input)) return false;
+    if (!parseInfo(result, input, bd)) return false;
     Node* newNode = new Node(genNextId(), result, num);
 
     rows.append(newNode);
@@ -289,8 +425,9 @@ bool Table::addRow(std::string input)
     return true;
 }
 
+//////////////////////////////////////////////////////////
 /* Редактирует строку, заменяя её на полностью новую */
-bool Table::editRow(int id, std::string input) {
+/*bool Table::editRow(int id, std::string input) {
     if (!findRow(id)) return false;
 
     DynamicArray<Info*> res;
@@ -306,9 +443,9 @@ bool Table::editRow(int id, std::string input) {
     rowById.erase(id);
     rowById.insert(id, editedNode);
 }
-
+*/
 /* Редактирует строку, изменяя только в определённой column */
-bool Table::editRowColumn(int id, std::string column, std::string input) {
+/*bool Table::editRowColumn(int id, std::string column, std::string input) {
     for (int i = 0; i < columnAmount; i++) {
         if (nameOfColumns[i] == column) {
             if (isValidPart(input, columns[i])) {
@@ -337,6 +474,8 @@ bool Table::deleteRow(int id) {
     rows.removeValue(node);
     delete node;
 }
+*/
+////////////////////////////////////////////////////////////
 
 bool Table::sortBy(std::string name) {
     int columnNum = -1;
@@ -400,6 +539,25 @@ DynamicArray<Node*> Table::findInRows(std::string subs) {
     return nodes;
 }
 
+
+int Table::findInColumn(const std::string& columnName, const std::string& inp) {
+    int column = -1;
+    for (int i = 0; i < columnAmount; i++) {
+        if (columnName == nameOfColumns[i]) {
+            column = i;
+        }
+    }
+
+    if (column == -1) return -1;
+
+
+    for (int i = 0; i < rows.size(); i++) {
+        if (rows[i]->dat[column]->getUserInput() == inp) {
+            return rows[i]->id;
+        }
+    }
+    return -1;
+}
 
 
 
@@ -679,4 +837,27 @@ void Table::PrintRows(int amount)
         PrintRow(rows[i], i+1);
     }
 
+}
+
+
+
+
+// Связи
+
+ColumnRelation::ColumnRelation(std::string column, int table, std::string display): columnName(column), toTable(table), displayColumn(display) {}
+
+void Table::addRelation(std::string fromColumn, int toTable, std::string displayColumn) {
+    ColumnRelation* newRelation = new ColumnRelation(fromColumn, toTable, displayColumn);
+    relations.append(newRelation);
+
+
+}
+
+ColumnRelation* Table::findRelation(std::string fromColumn) {
+    for (int i = 0; i < relations.size(); i++) {
+        if (relations[i]->columnName == fromColumn) {
+            return relations[i];
+        }
+    }
+    return nullptr;
 }

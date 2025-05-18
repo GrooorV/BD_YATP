@@ -21,9 +21,11 @@ struct ColumnRelation {
 	std::string columnName;
 	int toTable;
 	std::string displayColumn;
+
+	ColumnRelation(std::string, int, std::string);
 };
 
-class BD;
+class Database;
 
 
 class Table
@@ -35,9 +37,7 @@ public:
 
 	~Table();
 
-	bool addRow(std::string);
-
-	bool addRow(std::string, BD*);
+	bool addRow(std::string, Database*);
 
 	bool deleteRow(int);
 
@@ -72,11 +72,12 @@ public:
 	bool isLoaded();
 
 	bool printRow(Node*);
-	
+
+	int getRowId(int);
 
 	//Relations
 
-	bool addRelation(std::string fromColumn, int toTable, std::string displayColumn);
+	void addRelation(std::string fromColumn, int toTable, std::string displayColumn);
 private:
 
 	int num;
@@ -91,11 +92,19 @@ private:
 	HashMap<int, Node*> rowById;
 	DynamicArray<Node*> rows; //массив строк в таблице
 
-	DynamicArray<ColumnRelation> relations;
+	DynamicArray<ColumnRelation*> relations;
 
 	unsigned int genNextId();
 
 	void PrintRow(Node*, int);
 
-	bool parseInfo(DynamicArray<Info*>&, std::string);
+	bool parseInfo(DynamicArray<Info*>&, std::string, Database*);
+
+	int findInColumn(const std::string& columnName, const std::string& inp);
+
+	bool isValidPart(const std::string&, InfoType);
+
+	bool parseValidIds(std::string& inp, InfoType type, const std::string& columnName, Database* bd);
+
+	ColumnRelation* findRelation(std::string);
 };
