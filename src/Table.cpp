@@ -267,7 +267,7 @@ bool Table::parseValidIds(std::string& inp, InfoType type, const std::string& co
         }
         int id = 0;
         if (isValidInt(val)) {
-            id = cur->getRowId(std::stoi(val));
+            id = cur->getRowId(std::stoi(val) - 1);
             if (id == -1) {
                 std::cout << "Table " << link->toTable << " doesn't have row number " << val << std::endl;
                 return false;
