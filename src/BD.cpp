@@ -158,7 +158,7 @@ bool Database::safeAddTable(std::string filename) {
 	{
 		if (name == tables[i]->getName())
 		{
-			std::cout << "Table with name " << name << " already exists" << endl;
+			std::cout << "Table with name " << name << " already exists" << std::endl;
 			return false;
 		}
 	}
@@ -189,13 +189,13 @@ bool Database::addTable(std::string filename) {
 		if (name == tables[i]->getName())
 		{
 			delete newTable;
-			std::cout << "Table with name " << name << " already exists" << endl;
+			std::cout << "Table with name " << name << " already exists" << std::endl;
 			return false;
 		}
 	}
 	if (newTable->getId() <= tableID) {
 		delete newTable;
-		std::cout << "Table with id " << newTable->getId() << " already exists" << endl;
+		std::cout << "Table with id " << newTable->getId() << " already exists" << std::endl;
 		return false;
 	}
 	if (newTable->getId() > tableID) {
@@ -263,13 +263,13 @@ bool Database::CreateRelation(int fromTable, const std::string& fromColumn, int 
 
 	if (fromtable == nullptr)
 	{
-		std::cout << "No such \"fromTable\" " << fromTable << endl;
+		std::cout << "No such \"fromTable\" " << fromTable << std::endl;
 		return false;
 	}
 
 	if (totable == nullptr)
 	{
-		std::cout << "No such \"toTable\" " << toTable << endl;
+		std::cout << "No such \"toTable\" " << toTable << std::endl;
 		return false;
 	}
 
@@ -289,7 +289,7 @@ bool Database::CreateRelation(int fromTable, const std::string& fromColumn, int 
 
 	if (first == fromAmount) // верно ли?
 	{
-		std::cout << "No fromColumn with such name " << fromColumn << endl;
+		std::cout << "No fromColumn with such name " << fromColumn << std::endl;
 		return false;
 	}
 
@@ -301,7 +301,7 @@ bool Database::CreateRelation(int fromTable, const std::string& fromColumn, int 
 
 	if (second == toAmount) // верно ли?
 	{
-		std::cout << "No toColumn with such name " << toColumn << endl; 
+		std::cout << "No toColumn with such name " << toColumn << std::endl; 
 		return false;
 	}
 
@@ -319,7 +319,7 @@ bool Database::CreateRelation(int fromTable, const std::string& fromColumn, int 
 		return false; //убрать
 	}
 	else {
-		std::cout << "this fromColumn " << fromColumn << " from table " << fromTable << " does not contain linked type of data" << endl;
+		std::cout << "this fromColumn " << fromColumn << " from table " << fromTable << " does not contain linked type of data" << std::endl;
 		return false;
 	}
 

@@ -29,7 +29,7 @@ Table::Table(int number)
     num = number;
     curId = ID_START;
     bool seenTable = 0;
-    std::cout << "Enter a table name: "  << endl;
+    std::cout << "Enter a table name: "  << std::endl;
     while (true)
     {
         std::cout << "AddTable >> ";
@@ -37,21 +37,21 @@ Table::Table(int number)
         if (!tableName.empty())
         {
             break;
-        std::cout << "its empty, try again" << endl;
+        std::cout << "its empty, try again" << std::endl;
         }
 
     }
-    std::cout << "How many columns must be in table?" << endl;
+    std::cout << "How many columns must be in table?" << std::endl;
     while (!usersRightInput)
     {
         std::cout << "AddTable >> ";
         std::getline(std::cin, token);
         if (!isValidInt(token))
-            std::cout << "not a valid int number. Try again." << endl;
+            std::cout << "not a valid int number. Try again." << std::endl;
         else
         {
             if (std::stoi(token) <= 0)
-                std::cout << "not a valid positive number. Try again." << endl;
+                std::cout << "not a valid positive number. Try again." << std::endl;
             else
             {
                 columnAmount = std::stoi(token);
@@ -59,7 +59,7 @@ Table::Table(int number)
             }
         }
     }
-    std::cout << "1 - int, 2 - double, 3 - string, 4 - date, 5 - linked, 6 - ManyLinked, 7 - ManyInt." << endl;
+    std::cout << "1 - int, 2 - double, 3 - string, 4 - date, 5 - linked, 6 - ManyLinked, 7 - ManyInt." << std::endl;
     nameOfColumns = new std::string[columnAmount];
     columns = new InfoType[columnAmount];
     bool seen = 0;
@@ -68,20 +68,20 @@ Table::Table(int number)
         while (true)
         {
             seen = 0;
-            std::cout << "enter a name of the " << i + 1 << " column" << endl;
+            std::cout << "enter a name of the " << i + 1 << " column" << std::endl;
             std::cout << "AddTable >> ";
 
             getline(std::cin, nameOfColumns[i]);
             if (nameOfColumns[i].empty())
             {
-                std::cout << "its empty, try again" << endl;
+                std::cout << "its empty, try again" << std::endl;
                 continue;
             }
             for (int j = 0; j < i; j++)
             {
                 if (nameOfColumns[j] == nameOfColumns[i])
                 {
-                    std::cout << "Column with that name already exists, try again" << endl;
+                    std::cout << "Column with that name already exists, try again" << std::endl;
                     seen = 1;
                     break;
                 }
@@ -89,7 +89,7 @@ Table::Table(int number)
             if (!seen)
                 break;
         }
-        std::cout << "What is type of info in the " << i + 1 << " column?" << endl;
+        std::cout << "What is type of info in the " << i + 1 << " column?" << std::endl;
         do {
             usersRightInput = 0;
             std::cout << "AddTable >> ";
@@ -97,7 +97,7 @@ Table::Table(int number)
             if (!isValidInt(token))
             {
                 usersRightInput = 1;
-                std::cout << "not a valid int number. Try again." << endl;
+                std::cout << "not a valid int number. Try again." << std::endl;
             }
             else
             {
@@ -126,7 +126,7 @@ Table::Table(int number)
                     columns[i] = InfoType::ManyInt;
                     break;
                 default:
-                    std::cout << "impossible type of info! Try again." << endl;
+                    std::cout << "impossible type of info! Try again." << std::endl;
                     usersRightInput = 1;
                     break;
                 }
@@ -136,6 +136,7 @@ Table::Table(int number)
 
         } while (usersRightInput);
     }
+    fileN = "TABLE_" + tableName + ".txt";
     isValid = true;
 }
 
@@ -167,10 +168,6 @@ Table::~Table()
 // Всякие get 
 unsigned int Table::genNextId()
 {
-    if ((curId + 1) / ID_AMOUNT != num) {
-        //std::cout << "OVERFLOW??" << std::endl; // нужно додумать 
-        return ++curId;
-    }
     return ++curId;
 }
 
@@ -282,7 +279,7 @@ DynamicArray<std::string> parseStringArray(const std::string& input) {
     return result;
 }
 
-
+// Парсит строку от пользователя в вид ID, результат в inp 
 bool Table::parseValidIds(std::string& inp, InfoType type, const std::string& columnName, Database* bd) {
     std::string res = "";
     DynamicArray<std::string> tokens = parseStringArray(inp);
@@ -295,11 +292,11 @@ bool Table::parseValidIds(std::string& inp, InfoType type, const std::string& co
 
 
         ColumnRelation* link = findRelation(columnName);
-        int tablenum = link->toTable;
         if (!link) {
             std::cerr << "Invalid relation" << std::endl;
             return false;
         }
+        int tablenum = link->toTable;
         Table* cur = bd->findTable(link->toTable);
         if (!cur) {
             std::cerr << "Invalid relation. Cannot find the related table." << std::endl;
@@ -504,6 +501,7 @@ bool Table::editRow(int id, std::string input, Database* bd) {
     }
     rowById.erase(id);
     rowById.insert(id, editedNode);
+    return true;
 }
 
 /* Редактирует строку, изменяя только в определённой column */
@@ -548,9 +546,9 @@ bool Table::deleteRow(int id, Database* bd) {
     rowById.erase(node->id);
     rows.removeValue(node);
     delete node;
+    return true;
 }
 
-////////////////////////////////////////////////////////////
 
 bool Table::sortBy(std::string name) {
     int columnNum = -1;
@@ -664,7 +662,7 @@ std::string infoTypeToString(InfoType type) {
 
 bool Table::saveToFile()
 {
-    std::string filename = "TABLE_" + tableName + ".txt";
+    std::string filename = fileN;
     std::ofstream file(filename);
     if (!file.is_open()) {
         std::cout << "Unable to open file: " << filename << std::endl;
@@ -766,6 +764,7 @@ bool Table::loadFromFile(std::string filename)
         rows.append(node);
         rowById.insert(rowId, node);
     }
+    fileN = filename;
 
     file.close();
     return true;
@@ -773,10 +772,10 @@ bool Table::loadFromFile(std::string filename)
 
 bool Table::deleteFiles() {
 
-    if (!std::filesystem::remove(getFileName())) {
+    if (!std::filesystem::remove(fileN)) {
         return false;
     }
-    std::filesystem::remove(getFileName() + ".hash");
+    std::filesystem::remove(fileN+ ".hash");
     return true;
 }
 
@@ -793,10 +792,11 @@ int Table::getColumnWidth(InfoType type, Database* bd, std::string column) {
     case InfoType::ManyId: {
         ColumnRelation* link = findRelation(column);
         if (link != nullptr) {
-        int tablenum = link->toTable;
-        Table* cur = bd->findTable(link->toTable);
-        InfoType inf = cur->getColumnType(link->displayColumn);
-        return getColumnWidth(inf, bd, column);
+            Table* cur = bd->findTable(link->toTable);
+            if (cur) {
+                InfoType inf = cur->getColumnType(link->displayColumn);
+                return getColumnWidth(inf, bd, column);
+            }
         }
         return DEFAULT_COLUMN_WIDTH;
     }
@@ -816,6 +816,7 @@ int Table::getColumnWidth(InfoType type, Database* bd, std::string column) {
 
 DynamicArray<std::string> wrapText(const std::string& text, int width) {
     DynamicArray<std::string> lines;
+    if (width <= 0) return lines;
 
     for (int i = 0; i < text.size(); i += width) {
         lines.append(text.substr(i, width));
