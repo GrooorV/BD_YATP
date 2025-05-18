@@ -39,11 +39,11 @@ public:
 
 	bool addRow(std::string, Database*);
 
-	bool deleteRow(int);
+	bool deleteRow(int, Database*);
 
-	bool editRow(int, std::string);
+	bool editRow(int, std::string, Database*);
 
-	bool editRowColumn(int, std::string, std::string);
+	bool editRowColumn(int, std::string, std::string, Database*);
 
 	Node* findRow(int);
 
@@ -77,7 +77,7 @@ public:
 	
 	InfoType getColumnType(const std::string&);
 
-
+	bool IsInColumn(const std::string& columnName, const std::string& inp);
 
 
 

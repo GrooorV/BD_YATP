@@ -48,6 +48,8 @@ public:
 
 	bool isLoaded();
 
+	DynamicArray<Relation*> getRelations();
+
 	bool CreateRelation(int fromTable, const std::string& fromColumn, int toTable, const std::string& toColumn);
 
 private:

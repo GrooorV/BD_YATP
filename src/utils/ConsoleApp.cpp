@@ -605,7 +605,7 @@ void ConsoleApplication::proccessTable(std::stringstream& ss)
                             {
                                 if (std::stoi(rowID) > 0)
                                 {
-                                    if (table->editRow(std::stoi(rowID), toAdd))
+                                    if (table->editRow(std::stoi(rowID), toAdd, database))
                                     {
                                         std::cout << "Row was successfully edited" << std::endl;
                                     }
@@ -634,7 +634,7 @@ void ConsoleApplication::proccessTable(std::stringstream& ss)
                                 {
                                     if (std::stoi(rowID) > 0)
                                     {
-                                        if (table->editRowColumn(std::stoi(rowID), column, element))
+                                        if (table->editRowColumn(std::stoi(rowID), column, element, database))
                                         {
                                             std::cout << "Element was successfully edited" << std::endl;
                                         }
@@ -687,7 +687,7 @@ void ConsoleApplication::deleteRowID(Table* table, std::string rowID)
         if (std::stoi(rowID) > 0)
         {
             table->printColumnNames(database);
-            if (table->deleteRow(std::stoi(rowID) - 1))
+            if (table->deleteRow(std::stoi(rowID) - 1, database))
             {
                 table->PrintAllRows(database);
                 std::cout << std::endl;
@@ -768,7 +768,7 @@ void ConsoleApplication::deleteMany(Table* table, int ID)
             if (std::stoi(newID) > 0)
             {
                 table->printColumnNames(database);
-                if (table->deleteRow(std::stoi(newID)))
+                if (table->deleteRow(std::stoi(newID), database))
                 {
                     table->PrintAllRows(database);
                     std::cout << std::endl;

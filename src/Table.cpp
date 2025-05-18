@@ -484,13 +484,16 @@ bool Table::addRow(std::string input, Database* bd)
     return true;
 }
 
+
+
+
 //////////////////////////////////////////////////////////
 /* Редактирует строку, заменяя её на полностью новую */
-bool Table::editRow(int id, std::string input) {
+bool Table::editRow(int id, std::string input, Database* bd) {
     if (!findRow(id)) return false;
 
     DynamicArray<Info*> res;
-    //if (!parseInfo(res, input)) return false;
+    if (!parseInfo(res, input, bd)) return false;
 
     Node* editedNode = new Node(id, res, num);
     for (int i = 0; i < rows.size(); i++) {
@@ -504,30 +507,43 @@ bool Table::editRow(int id, std::string input) {
 }
 
 /* Редактирует строку, изменяя только в определённой column */
-bool Table::editRowColumn(int id, std::string column, std::string input) {
+bool Table::editRowColumn(int id, std::string column, std::string input, Database* bd) {
     for (int i = 0; i < columnAmount; i++) {
         if (nameOfColumns[i] == column) {
-            if (isValidPart(input, columns[i])) {
-                std::string s = "";
-                for (int j = 0; j < columnAmount; j++) {
-                    if (nameOfColumns[j] == column) {
-                        s += input + " ";
-                    }
-                    else {
-                        s += rowById.find(id)->dat[j]->getUserInput()+ " ";
-                    }
+            if (columns[i] == InfoType::Id || columns[i] == InfoType::ManyId) {
+                if (!parseValidIds(input, columns[i], nameOfColumns[i], bd)) return false;
+            }
+            else {
+                if (!isValidPart(input, columns[i])) return false;
+            }
+            std::string s = "";
+            for (int j = 0; j < columnAmount; j++) {
+                if (nameOfColumns[j] == column) {
+                    s += input + " ";
                 }
-                return editRow(id, s);
+                else {
+                    s += rowById.find(id)->dat[j]->getUserInput()+ " ";
+                }
+            }
+            return editRow(id, s, bd);
             }
         }
-    }
     return false;
 }
 
-bool Table::deleteRow(int id) {
-
+bool Table::deleteRow(int id, Database* bd) {
     if (id > rows.size()) return false;
     Node* node = rows[id];
+    DynamicArray<Relation*> relati = bd->getRelations();
+    for (int i = 0; i < relati.size(); i++) {
+        if (relati[i]->toTable == num) {
+            Table* cur = bd->findTable(relati[i]->fromTable);
+            if (cur->IsInColumn(relati[i]->fromColumn, std::to_string(rows[id]->id))) {
+                std::cout << "Can't delete the row. This row has related rows." << std::endl;
+                return false;
+            }
+        }
+    }
 
     rowById.erase(node->id);
     rows.removeValue(node);
@@ -833,6 +849,12 @@ void Table::printColumnNames(Database* bd) {
 
 void Table::PrintRow(Node* row, int number, Database* bd)
 {
+    for (int i = 0; i < relations.size(); i++) {
+        if (!bd->findTable(relations[i]->toTable)) { 
+            std::cout << "The related table doesn't exist" << std::endl;
+            return; 
+        }
+    }
     DynamicArray<DynamicArray<std::string>> wrappedColumns;
     int maxHeight = 1;
 
@@ -995,13 +1017,46 @@ std::string Table::getRelationText(const std::string& ids, int columnNum, Databa
 
     std::string res = "";
     for (int i = 0; i < data.size(); i++) {
+        std::string val = cur->findValue(data[i], link->displayColumn);
         if (i == 0){
-            res += cur->findValue(data[i], link->displayColumn);
+            if (val != "") {
+                res += val;
+            }
+            else {
+                res += "Unknown connection";
+            }
         }
         else {
-            res += ", " + cur->findValue(data[i], link->displayColumn);
+            if (val != "") {
+                res += ", " + val;
+            }
+            else {
+                res += "Unknown connection";
+            }
         }
     }
     return res;
+
+}
+
+
+
+bool Table::IsInColumn(const std::string& columnName, const std::string& inp) {
+    int column = -1;
+    for (int i = 0; i < columnAmount; i++) {
+        if (columnName == nameOfColumns[i]) {
+            column = i;
+        }
+    }
+
+    if (column == -1) return false;
+
+
+    for (int i = 0; i < rows.size(); i++) {
+        if (rows[i]->dat[column]->getUserInput() == inp) {
+            return true;
+        }
+    }
+    return false;
 
 }
