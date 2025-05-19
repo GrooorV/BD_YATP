@@ -287,7 +287,7 @@ bool Database::CreateRelation(int fromTable, const std::string& fromColumn, int 
 		}
 	}
 
-	if (first == fromAmount) // верно ли?
+	if (fromAllNames[first] != fromColumn) // верно ли?
 	{
 		std::cout << "No fromColumn with such name " << fromColumn << std::endl;
 		return false;
