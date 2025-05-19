@@ -829,7 +829,9 @@ void Table::printColumnNames(Database* bd) {
         if (nameOfColumns[i].length() >= width) {
             std::cout << std::setw(width) << std::left << nameOfColumns[i].substr(0, width - 1) << "|";
         }
-        std::cout << std::setw(width) << std::left << nameOfColumns[i] << "|";
+        else {
+            std::cout << std::setw(width) << std::left << nameOfColumns[i] << "|";
+        }
     }
     std::cout << '\n';
 
