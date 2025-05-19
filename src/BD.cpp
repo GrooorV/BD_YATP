@@ -352,3 +352,13 @@ bool Database::deleteRelation(int fromTable, const std::string& fromColumn, int 
 
 	return false;
 }
+
+
+DynamicArray<DynamicArray<Node*>> Database::findInTables(std::string inp) {
+	DynamicArray<DynamicArray<Node*>> res;
+	for (int i = 0; i < tables.size(); i++) {
+		DynamicArray<Node*> t = tables[i]->findInRows(inp);
+		if (t.size() > 0) res.append(t);
+	}
+	return res;
+}

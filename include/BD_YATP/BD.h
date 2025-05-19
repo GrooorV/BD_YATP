@@ -38,6 +38,8 @@ public:
 
 	Node* findById(int);
 
+	DynamicArray<DynamicArray<Node*>> findInTables(std::string inp);
+
 	bool saveBDInfotoFile(); // сохраняет информацию о базе данных, не сохраняет каждую таблицу по отдельности
 
 	bool saveAllToFiles(); // сохраняет и информацию о базе данных и каждую таблицу по отдельности 
