@@ -326,6 +326,9 @@ bool Database::CreateRelation(int fromTable, const std::string& fromColumn, int 
 	return false;
 }
 
+
+
+
 DynamicArray<Relation*> Database::getRelations() {
 	return relations;
 }
@@ -334,4 +337,17 @@ DynamicArray<Relation*> Database::getRelations() {
 int Database::getNumOftables()
 {
 	return tables.size();
+}
+
+
+bool Database::deleteRelation(int fromTable, const std::string& fromColumn, int toTable, const std::string& toColumn) {
+	for (int i = 0; i < relations.size(); i++) {
+		if (relations[i]->fromTable == fromTable && relations[i]->fromColumn == fromColumn && relations[i]->toColumn == toColumn && relations[i]->toTable == toTable) {
+			Table* cur = findTable(fromTable);
+			cur->deleteRelation(fromColumn);
+			return true;
+		}
+	}
+
+	return false;
 }
