@@ -308,7 +308,7 @@ bool Database::CreateRelation(int fromTable, const std::string& fromColumn, int 
 	InfoType* colunmsFromTable = fromtable->getInfoTypes();
 	InfoType* colunmsToTable = totable->getInfoTypes();
 
-	if (colunmsFromTable[first] == InfoType::Id || colunmsFromTable[first] == InfoType::ManyId)
+	if ((colunmsFromTable[first] == InfoType::Id || colunmsFromTable[first] == InfoType::ManyId) && (colunmsFromTable[first] != colunmsToTable[second]))
 	{
 		Relation* link = new Relation(fromTable, toTable, fromColumn, toColumn);
 		relations.append(link);
