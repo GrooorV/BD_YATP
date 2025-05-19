@@ -362,9 +362,6 @@ void ConsoleApplication::proccessBD(std::stringstream& ss)
                 std::cout << "Database hasn't been created. Please, create one" << std::endl;
             }
         }
-        //
-        //
-        //
         else {
             std::cout << "unknown Type of operation with database: " << action << std::endl;
         }
