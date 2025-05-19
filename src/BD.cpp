@@ -345,6 +345,7 @@ bool Database::deleteRelation(int fromTable, const std::string& fromColumn, int 
 		if (relations[i]->fromTable == fromTable && relations[i]->fromColumn == fromColumn && relations[i]->toColumn == toColumn && relations[i]->toTable == toTable) {
 			Table* cur = findTable(fromTable);
 			cur->deleteRelation(fromColumn);
+			relations.removeAt(i);
 			return true;
 		}
 	}
