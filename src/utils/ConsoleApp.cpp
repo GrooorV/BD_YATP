@@ -25,6 +25,16 @@ void ConsoleApplication::run() {
         switch (action[0]) {
         case 'e':
             if (action == "exit") {
+                if (database != nullptr)
+                {
+                    char save;
+                    std::cout << "Would you like to save database? (y or n)" << std::endl;
+                    std::cin >> save;
+                    if (save == 'y')
+                    {
+                        database->saveAllToFiles();
+                    }
+                }
                 return;
             }
             else {
@@ -352,6 +362,9 @@ void ConsoleApplication::proccessBD(std::stringstream& ss)
                 std::cout << "Database hasn't been created. Please, create one" << std::endl;
             }
         }
+        //
+        //
+        //
         else {
             std::cout << "unknown Type of operation with database: " << action << std::endl;
         }
