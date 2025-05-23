@@ -88,6 +88,7 @@ void ConsoleApplication::HELP()
         "Description:\n"
         "This is a database editor with basic functions of editing tables \n"
         "EXIT to exit, HELP to help\n"
+        "Before start working with database, you must create one using BD CREATE [name]\n"
         "\n"
         "\n"
         "Commands:\n"
@@ -104,7 +105,7 @@ void ConsoleApplication::HELP()
         "\n"
         "   Database commands (BD):\n"
         "\n"
-        "   BD CREATE [name]                                     Creates database for editor with name entered. Firstly tries to find database in files, if couldn't find one, creates completely new one to work with\n"
+        "   BD CREATE [name]                                     Creates database for editor with name entered. Firstly tries to find database in files, if couldn't find one, creates completely new one to work with, doesn`t save BD automatically\n"
         "\n"
         "\n"
         "   BD CONNECT [TabFrom] [ColumnFrom] [TabTo] [columnTo] Creates connection between two columns of two different tables"
@@ -113,10 +114,10 @@ void ConsoleApplication::HELP()
         "   BD DELETECONNECTION [TabFrom] [ColumnFrom] [TabTo] [columnTo] Creates connection between two columns of two different tables"
         "\n"
         "\n"
-        "   BD ADD                                               Creates new table with constructor. Instruction for creating table in constructor itself\n"
+        "   BD ADD                                               Creates new table with constructor. Instruction for creating table in constructor itself (boots automatically after typing this command)\n"
         "\n"
         "\n"
-        "   BD ADDFROMFILE [filename]                            Loads table from file with name entered. You can work with this table, checks checksum. If error happened, you still can add table to database, but other errors may happen\n"
+        "   BD ADDFROMFILE [filename]                            Loads table from file with name entered, must type FULL name of file (like TABLE_1.txt). Checks checksum before adding. If error happened, you still can add table to database, but other errors may happen\n"
         "\n"
         "\n"
         "   BD DELETE [number]                                   Deletes table with number entered (info and file itself)\n"
@@ -131,7 +132,7 @@ void ConsoleApplication::HELP()
         "   BD PRINTNAMES                                        Prints only database's tables with numbers and names\n"
         "\n" 
         "\n"
-        "   BD PRINTROW [numrow]                                 Prints row from unknown table by its id\n"
+        "   BD PRINTROW [numrow]                                 Prints row from unknown table by its number!!!!!!REQUIRES ID!!!!!!!\n"
         "\n"
         "\n"
         "\n"
@@ -147,10 +148,10 @@ void ConsoleApplication::HELP()
         "   TABLE [number] PRINTROWS                             Prints all rows of table with number entered\n"
         "\n"
         "\n"
-        "   TABLE [number] PRINTROW [numrow]                     Prints row with id entered from the table with number entered\n"
+        "   TABLE [number] PRINTROW [numrow]                     Prints row with id entered from the table with number entered!!!!!!REQUIRES ID!!!!!!!\n"
         "\n"
         "\n"
-        "   TABLE [number] ADD [row]                             Adds new row entered to the table\n"
+        "   TABLE [number] ADD [row]                             Adds new row entered to the table, mark different info with space between them\n"
         "\n"
         "\n"
         "   TABLE [number] ADDMANY                               Boots function to add many rows next to each other\n"
@@ -162,7 +163,7 @@ void ConsoleApplication::HELP()
         "   TABLE [number] SAVE                                  Saves table to file, name takes from name of table\n"
         "\n"
         "\n"
-        "   TABLE [number] DELETE [numrow]                       Deletes row with id entered. To apply changes you need to save file.\n"
+        "   TABLE [number] DELETE [numrow]                       Deletes row with id entered. To apply changes you need to save file. Cannot delete row with relations!!!!!!REQUIRES ID!!!!!!!\n"
         "\n"
         "\n"
         "   Table [number] DELETEMANY                            Boots function to delete many rows next to each other\n"
@@ -174,7 +175,7 @@ void ConsoleApplication::HELP()
         "   TABLE [number] EDIT [numrow] [row]                   Edits existing row from table with id entered. if elements entered less than in the table, there will remain empty space\n"
         "\n"
         "\n"
-        "   TABLE [number] EDITELEMENT [numrow] [name] [element] Edits existing element by id of row and mane of column\n"
+        "   TABLE [number] EDITELEMENT [numrow] [name] [element] Edits existing element by id of row and mane of column !!!!REQUIRES ID!!!!!!\n"
         "\n"
         "\n"
         "\n"
@@ -396,7 +397,41 @@ void ConsoleApplication::proccessBD(std::stringstream& ss)
             std::cout << "unknown Type of operation with database: " << action << std::endl;
         }
         break;
+    case 'f':
+        if (action == "find") // доделать
+        {
 
+            std::string tmp, input;
+            while (ss >> tmp)
+            {
+                input += tmp + " ";
+            }
+            DynamicArray<DynamicArray<Node*>> Nodes = database->findInTables(input);
+            for (int i = 0; i < Nodes.size(); i++)
+            {
+                if (action == "find")
+                {
+                    DynamicArray<Node*> n = Nodes[i];
+                    Table* table = database->findTable(n[0]->tabN);
+                    table->printColumnNames(database);
+                    if (n.size() > 0)
+                    {
+                        for (int i = 0; i < n.size(); i++) {
+                            table->printRow(n[i], database);
+                        }
+                        std::cout << "\n";
+                    }
+                    else {
+                        std::cout << "Couldn't find rows with that element: " << std::endl;
+                    }
+                }
+                else {
+                    std::cout << "Unknown Type of operation with table: " << std::endl;
+                }
+            }
+
+        }
+        break;
 
 
     case 'p':
@@ -638,9 +673,8 @@ void ConsoleApplication::proccessTable(std::stringstream& ss)
                             std::string toAdd;
                             ss >> rowID;
                             while (ss >> tmp)
-                            {
                                 toAdd += tmp + " ";
-                            }
+                            
                             if (isValidInt(rowID))
                             {
                                 if (std::stoi(rowID) > 0)
