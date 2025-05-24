@@ -1,5 +1,6 @@
 #include "Info.h"
 #include "DynamicArray.h"
+#include "Parsers.h"
 
 Info::Info(InfoType t, const std::string& input) : type(t), userInput(input) {
     switch (type) {
@@ -16,29 +17,7 @@ Info::Info(InfoType t, const std::string& input) : type(t), userInput(input) {
         case InfoType::ManyId:
         case InfoType::ManyInt:
         case InfoType::Id: {
-            data.vi = new DynamicArray<int>;
-            size_t start = 0;
-            size_t end = 0;
-            // фан факт без трайев не будет работать
-            // логика проста, через запятые вводите и все на базе йоу
-            // "1,2,3,12,13"
-            while ((end = input.find(',', start)) != std::string::npos) {
-                std::string token = input.substr(start, end - start);
-                try {
-                    int value = std::stoi(token);
-                    data.vi->append(value);
-                } catch (...){}
-                start = end + 1;
-            }
-
-            if (start < input.length()) {
-                try {
-                    int value = std::stoi(input.substr(start));
-                    data.vi->append(value);
-                } catch (...) {}
-            }
-
-            break;
+            data.vi = new DynamicArray<int>(parseIntArray(input));
         }
         case InfoType::None:
             break;
@@ -78,6 +57,7 @@ double Info::getDouble() const {
 }
 const std::string& Info::getString() const {
     if (type == InfoType::String || type == InfoType::Date) return *data.s;
+    return userInput;
 }
 const DynamicArray<int>& Info::getIntArray() const {
     if (type == InfoType::ManyInt || type == InfoType::Id) return *data.vi;

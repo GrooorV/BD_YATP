@@ -1,5 +1,6 @@
 #include <sstream>
 #include <fstream>
+#include <codecvt>
 #include "BD.h"
 #include "Validators.h"
 #include "Checksum.h"
@@ -60,17 +61,20 @@ bool Database::isLoaded()
 bool Database::saveBDInfotoFile()
 {
 	std::string filename = "BD_" + name + ".txt";
-	std::ofstream file(filename);
+	std::ofstream file(filename, std::ios::out | std::ios::binary);
 	if (!file.is_open()) {
 		std::cout << "Unable to open file: " << filename << ". Creating completely new database;" << std::endl;
 		return false;
 	}
+
+	file.imbue(std::locale(file.getloc(), new std::codecvt_utf8<wchar_t>));
 
 	file << name << '\n' << tableID << '\n';
 	file << tables.size() << '\n' << relations.size() << '\n';
 	for (int i = 0; i < tables.size(); i++) {
 		file << tables[i]->getFileName() << '\n';
 	}
+
 
 	for (int i = 0; i < relations.size(); i++) {
 		file << relations[i]->fromColumn << " " << relations[i]->fromTable << " " << relations[i]->toColumn << " " << relations[i]->toTable << '\n';
@@ -123,6 +127,7 @@ bool Database::loadBDfromFile(std::string bname)
 				delete tables[j];
 			}
 			tables.clear();
+			std::cout << "Not all tables were found" << std::endl;
 			return false;
 		}
 		tables.append(table);

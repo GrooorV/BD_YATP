@@ -16,8 +16,8 @@ file(GLOB CORE_SRC src/*.cpp)
 file(GLOB UTILS_SRC src/utils/*.cpp)
 file(GLOB TEST_SRC test/*.cpp)
 
-add_executable(BD_YATP ${MAIN_SRC} ${CORE_SRC} ${UTILS_SRC})
+add_executable(BD_YATP ${MAIN_SRC} ${CORE_SRC} ${UTILS_SRC} "include/utils/Parsers.h" "src/utils/Parsers.cpp")
 
 
-add_executable(BD_YATP_tests ${TEST_SRC} ${CORE_SRC} ${UTILS_SRC}) 
+add_executable(BD_YATP_tests ${TEST_SRC} ${CORE_SRC} ${UTILS_SRC} "include/utils/Parsers.h" "src/utils/Parsers.cpp") 
 target_include_directories(BD_YATP_tests PRIVATE include/utils include/BD_YATP)
