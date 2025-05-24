@@ -104,7 +104,6 @@ private:
 
 	unsigned int genNextId();
 
-
 	// Парсинг
 	bool parseInfo(DynamicArray<Info*>&, std::string, Database*);
 	bool parseValidIds(std::string& inp, InfoType type, const std::string& columnName, Database* bd);

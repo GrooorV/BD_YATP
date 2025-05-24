@@ -679,7 +679,7 @@ void ConsoleApplication::proccessTable(std::stringstream& ss)
                             {
                                 if (std::stoi(rowID) > 0)
                                 {
-                                    if (table->editRow(std::stoi(rowID), toAdd, database))
+                                    if (table->editRow(std::stoi(rowID) - 1, toAdd, database))
                                     {
                                         std::cout << "Row was successfully edited" << std::endl;
                                     }
@@ -708,7 +708,7 @@ void ConsoleApplication::proccessTable(std::stringstream& ss)
                                 {
                                     if (std::stoi(rowID) > 0)
                                     {
-                                        if (table->editRowColumn(std::stoi(rowID), column, element, database))
+                                        if (table->editRowColumn(std::stoi(rowID) - 1, column, element, database))
                                         {
                                             std::cout << "Element was successfully edited" << std::endl;
                                         }

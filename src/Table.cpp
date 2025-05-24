@@ -410,9 +410,9 @@ bool Table::addRow(std::string input, Database* bd)
 
 
 
-//////////////////////////////////////////////////////////
 /* Редактирует строку, заменяя её на полностью новую */
-bool Table::editRow(int id, std::string input, Database* bd) {
+bool Table::editRow(int nu, std::string input, Database* bd) {
+    int id = getRowId(nu);
     if (!findRow(id)) return false;
 
     DynamicArray<Info*> res;
@@ -431,13 +431,17 @@ bool Table::editRow(int id, std::string input, Database* bd) {
 }
 
 /* Редактирует строку, изменяя только в определённой column */
-bool Table::editRowColumn(int id, std::string column, std::string input, Database* bd) {
+bool Table::editRowColumn(int nu, std::string column, std::string input, Database* bd) {
+    int id = getRowId(nu);
+
     for (int i = 0; i < columnAmount; i++) {
         if (nameOfColumns[i] == column) {
             if (columns[i] == InfoType::Id || columns[i] == InfoType::ManyId) {
                 if (!parseValidIds(input, columns[i], nameOfColumns[i], bd)) return false;
             }
             else {
+                std::cout << input << std::endl;
+                std::cout << (columns[i] == InfoType::String) << std::endl;
                 if (!isValidPart(input, columns[i])) return false;
             }
             std::string s = "";
@@ -446,16 +450,17 @@ bool Table::editRowColumn(int id, std::string column, std::string input, Databas
                     s += input + " ";
                 }
                 else {
-                    s += rowById.find(id)->dat[j]->getUserInput()+ " ";
+                    s += rowById.find(id)->dat[j]->getUserInput() + " ";
                 }
             }
-            return editRow(id, s, bd);
+            return editRow(nu, s, bd);
             }
         }
     return false;
 }
 
-bool Table::deleteRow(int id, Database* bd) {
+bool Table::deleteRow(int nu, Database* bd) {
+    int id = getRowId(nu);
     if (id > rows.size()) return false;
     Node* node = rows[id];
     DynamicArray<Relation*> relati = bd->getRelations();
@@ -474,6 +479,8 @@ bool Table::deleteRow(int id, Database* bd) {
     delete node;
     return true;
 }
+
+
 
 
 bool Table::sortBy(std::string name) {
