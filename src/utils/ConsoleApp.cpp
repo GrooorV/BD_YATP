@@ -736,7 +736,7 @@ void ConsoleApplication::proccessTable(std::stringstream& ss)
                                 ss >> rowID;
                                 ss >> column;
                                 while (ss >> tmp)
-                                    element = tmp + " ";
+                                    element += tmp + " ";
                                 if (isValidInt(rowID))
                                 {
                                     if (std::stoi(rowID) > 0)
@@ -812,9 +812,10 @@ void ConsoleApplication::proccessFilter(std::stringstream& ss)
                         if (database->findTable(std::stoi(tableNum)) != nullptr)
                         {
                             while (ss >> tmp)
-                                element = tmp + " ";
+                                element += tmp + " ";
                             if (query == nullptr)
                             {
+                                cout << element << endl;
                                 query = new QueryTable(database, std::stoi(tableNum), std::stoi(type), element);
                                 if (query->isFound() && query->foundRows() !=0)
                                 {
@@ -872,7 +873,7 @@ void ConsoleApplication::proccessFilter(std::stringstream& ss)
                         if (std::stoi(type) == 1 || std::stoi(type) == 2)
                         {
                             while (ss >> tmp)
-                                element = tmp + " ";
+                                element += tmp + " ";
                             query->filter(std::stoi(type), element);
                             query->print();
                         }
