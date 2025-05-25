@@ -14,10 +14,12 @@ struct Node
 	unsigned int id; 
 	DynamicArray<Info*> dat; 
 	int tabN; 
-
-	Node(unsigned int, DynamicArray<Info*>, int);
+	bool own;
+	Node(unsigned int, DynamicArray<Info*>, int, bool owns=true);
 
 	~Node();
+
+	bool isLike(Node*);
 };
 
 
@@ -49,7 +51,7 @@ public:
 	std::string findValue(int, std::string);
 	DynamicArray<Node*> findInRows(std::string);
 	bool IsInColumn(const std::string& columnName, const std::string& inp);
-
+	DynamicArray<Node*> getSimilar(Node* mask, Database* bd);
 
 	// Вывод
 	void printColumnNames(Database*);
@@ -73,7 +75,7 @@ public:
 	int getRowId(int);
 	InfoType* getInfoTypes();
 	bool isLoaded();
-
+	bool isSimilar(Node*, int, Database* bd);
 
 
 	bool sortBy(std::string);
@@ -82,8 +84,8 @@ public:
 
 	//Relations
 	bool addRelation(std::string fromColumn, int toTable, std::string displayColumn);
-
 	bool deleteRelation(std::string fromColumn);
+	ColumnRelation* findRelation(std::string);
 
 private:
 
@@ -111,7 +113,7 @@ private:
 
 	//Вывод
 	void PrintRow(Node*, int, Database*);
-	void printDivider(Database*);
+	//void printDivider(Database*);
 	int getColumnWidth(InfoType type, Database* db, std::string );
 	std::string getRelationText(const std::string&, int, Database*);
 
@@ -119,5 +121,4 @@ private:
 	// Подтверждалк
 	int findInColumn(const std::string& columnName, const std::string& inp);
 	bool isValidPart(const std::string&, InfoType);
-	ColumnRelation* findRelation(std::string);
 };

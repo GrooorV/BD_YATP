@@ -1,4 +1,6 @@
 #include "Parsers.h"
+#include <string>
+#include <string_view>
 
 
 DynamicArray<std::string> parseStringArray(const std::string& input) {
@@ -62,6 +64,7 @@ DynamicArray<std::string> parseStringArray(const std::string& input) {
     return result;
 }
 
+
 DynamicArray<int> parseIntArray(const std::string& input)
 {
     DynamicArray<int> data;
@@ -98,4 +101,125 @@ DynamicArray<int> parseIntArray(const std::string& input)
         start = end;
     }
     return data;
+}
+
+
+bool parseTokens(const std::string& input, int columnAmount, DynamicArray<std::string>& tokens) {
+    int pos = 0;
+
+    while (tokens.size() < columnAmount && pos < input.size()) {
+
+        while (pos < input.size() && input[pos] == ' ') {
+            pos++;
+        }
+        if (pos >= input.size()) break;
+
+        std::string token;
+
+        if (input[pos] == '"') {
+            pos++;
+            std::string buffer;
+
+            while (pos < input.size()) {
+                char c = input[pos++];
+
+                if (c == '\\') {
+                    if (pos >= input.size()) return false;
+                    char nextChar = input[pos++];
+                    if (nextChar == '"') {
+                        buffer += '"';
+                    }
+                    else {
+                        return false;
+                    }
+                }
+                else {
+                    if (c == '"') {
+                        break;
+                    }
+                    else {
+                        buffer += c;
+                    }
+                }
+            }
+
+            token = buffer;
+            if (pos < input.size() && input[pos] == ' ') {
+                pos++;
+            }
+        }
+        else {
+            int next = input.find(' ', pos);
+            if (next == std::string::npos) {
+                token = input.substr(pos);
+                pos = input.size();
+            }
+            else {
+                token = input.substr(pos, next - pos);
+                pos = next + 1;
+            }
+        }
+
+        tokens.append(token);
+    }
+
+    return true;
+}
+
+
+bool parseConditions(const std::string& input, HashMap<std::string, std::string>& result) {
+
+    size_t start = 0;
+    size_t end = input.find('"', 1);
+
+    while (start != std::string::npos) {
+        while (start < input.size() && std::isspace(input[start])) start++;
+        if (start >= input.size()) break;
+
+        if (input[start] != '"') {
+            std::cout << "Expected '\"' at position " + std::to_string(start) << std::endl;
+        }
+
+        end = input.find('"', start + 1);
+        if (end == std::string::npos) {
+            std::cout << "Unclosed '\"' for key at position " + std::to_string(start) << std::endl;
+            return false;
+        }
+
+        std::string key = input.substr(start + 1, end - start - 1);
+
+        start = end + 1;
+        while (start < input.size() && std::isspace(input[start])) start++;
+
+        if (start >= input.size() || input[start] != '=') {
+            std::cout << "Expected '=' after key at position " + std::to_string(start) << std::endl;
+            return false;
+        }
+
+        start++;
+        while (start < input.size() && std::isspace(input[start])) start++;
+
+
+        if (start >= input.size() || input[start] != '"') {
+            std::cout << "Expected '\"' for value at position " + std::to_string(start) << std::endl;
+            return false;
+        }
+
+
+        end = input.find('"', start + 1);
+        if (end == std::string::npos) {
+            std::cout << "Unclosed '\"' for value at position " + std::to_string(start) << std::endl;
+            return false;
+        }
+
+        std::string value = input.substr(start + 1, end - start - 1);
+        result.insert(key, value); 
+
+        start = input.find('"', end + 1);
+    }
+
+    if (result.isEmpty()) {
+        std::cout << "No conditions found in query" << std::endl;
+    }
+    return true;
 }

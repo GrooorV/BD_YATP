@@ -3,6 +3,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include "QueryTable.h"
 
 using namespace std;
 
@@ -218,6 +219,7 @@ void ConsoleApplication::proccessBD(std::stringstream& ss)
             {
                 database = new Database(name);
                 std::cout << "Successfully created database " << name << std::endl;
+
             }
             else {
                 std::cout << "Database has been already created. Creating a new one..." << endl;
@@ -704,6 +706,8 @@ void ConsoleApplication::proccessTable(std::stringstream& ss)
                                 ss >> rowID;
                                 ss >> column;
                                 ss >> element;
+
+
                                 if (isValidInt(rowID))
                                 {
                                     if (std::stoi(rowID) > 0)

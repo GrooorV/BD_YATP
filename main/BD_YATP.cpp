@@ -4,7 +4,7 @@
 #include <codecvt>
 #include <fstream>
 #include <iostream>
-
+#include "HashMap.h"
 
 int main() {
 

@@ -1,4 +1,7 @@
 ﻿#pragma once
+#include <functional>
+#include "DynamicArray.h"
+
 
 template<typename K, typename V>
 class HashMap {
@@ -19,17 +22,28 @@ private:
         return std::hash<K>{}(key) % capacity;
     }
 
+    void insertWithoutRehash(const K& key, const V& value) {
+        unsigned int idx = hash(key);
+        while (table[idx].occupied) {
+            idx = (idx + 1) % capacity;
+        }
+        table[idx].key = key;
+        table[idx].value = value;
+        table[idx].occupied = true;
+        count++;
+    }
+
     void rehash() {
         unsigned int oldCapacity = capacity;
         Entry* oldTable = table;
 
-        capacity = capacity * 2;
+        capacity *= 2;
         table = new Entry[capacity];
         count = 0;
 
         for (unsigned int i = 0; i < oldCapacity; i++) {
             if (oldTable[i].occupied) {
-                insert(oldTable[i].key, oldTable[i].value);
+                insertWithoutRehash(oldTable[i].key, oldTable[i].value);
             }
         }
 
@@ -37,8 +51,8 @@ private:
     }
 
 public:
-    HashMap() : capacity(100), count(0) {
-        table = new Entry[capacity];
+    HashMap() : capacity(8), count(0) {
+        table = new Entry[capacity]{};
     }
 
     ~HashMap() {
@@ -58,6 +72,7 @@ public:
             }
             idx = (idx + 1) % capacity;
         }
+
         table[idx].key = key;
         table[idx].value = value;
         table[idx].occupied = true;
@@ -65,44 +80,41 @@ public:
     }
 
     bool erase(const K& key) {
-        unsigned int indx = hash(key);
-        unsigned int startIndex = indx;
-        while (table[indx].occupied) {
-            if (table[indx].key == key) {
-                table[indx].occupied = false;
+        unsigned int idx = hash(key);
+        unsigned int startIndex = idx;
+        while (table[idx].occupied) {
+            if (table[idx].key == key) {
+                table[idx].occupied = false;
                 count--;
                 return true;
             }
-            indx = (indx + 1) % capacity;
-            if (indx == startIndex) break;
+            idx = (idx + 1) % capacity;
+            if (idx == startIndex) break;
         }
         return false;
     }
 
-    V find(const K& key) {
-        unsigned int indx = hash(key);
-        unsigned int startIndex = indx;
-        while (table[indx].occupied) {
-            if (table[indx].key == key) {
-                return table[indx].value;
+    V find(const K& key) const {
+        unsigned int idx = hash(key);
+        unsigned int startIndex = idx;
+        while (table[idx].occupied) {
+            if (table[idx].key == key) {
+                return table[idx].value;
             }
-            indx = (indx + 1) % capacity;
-            if (indx == startIndex) break;
+            idx = (idx + 1) % capacity;
+            if (idx == startIndex) break;
         }
-        return nullptr;
+        return V{};  // безопасный дефолт
     }
 
-    const V find(const K& key) const {
-        unsigned int indx = hash(key);
-        unsigned int startIndex = indx;
-        while (table[indx].occupied) {
-            if (table[indx].key == key) {
-                return table[indx].value;
+    DynamicArray<K> getKeys() const {
+        DynamicArray<K> keys;
+        for (unsigned int i = 0; i < capacity; ++i) {
+            if (table[i].occupied) {
+                keys.append(table[i].key);
             }
-            indx = (indx + 1) % capacity;
-            if (indx == startIndex) break;
         }
-        return nullptr;
+        return keys;
     }
 
     unsigned int size() const {

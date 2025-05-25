@@ -6,18 +6,34 @@
 #include "Validators.h"
 #include "BD.h"  
 #include "Parsers.h"
+#include "PrintUtils.h"
 
 
-Node::Node(unsigned int d, DynamicArray<Info*> list, int table) : id(d), dat(list), tabN(table) {}
+Node::Node(unsigned int d, DynamicArray<Info*> list, int table, bool owns) : id(d), dat(list), tabN(table), own(owns)  {}
 
 Node::~Node()
 {
-    for (unsigned int i = 0; i < dat.size(); ++i) {
-        delete dat[i];
+    if (own) {
+        for (unsigned int i = 0; i < dat.size(); ++i) {
+            delete dat[i];
+        }
     }
 }
 
+bool Node::isLike(Node* other)
+{
+    for (int i = 0; i < other->dat.size(); i++) {
+        for (int j = 0; j < dat.size(); j++) {
+            std::string otherInput = other->dat[i]->getUserInput();
+            std::string thisInput = dat[j]->getUserInput();
 
+            if (thisInput.find(otherInput) != std::string::npos || otherInput.find(thisInput) != std::string::npos) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
 
 
 /* Конструктор создания новой таблицы*/
@@ -209,6 +225,27 @@ bool Table::isLoaded()
     return isValid;
 }
 
+bool Table::isSimilar(Node* mask, int id, Database* bd)
+{
+    Node* cur = rowById.find(id);
+
+    if (cur == nullptr) return false;
+    if (cur->isLike(mask)) return true;
+    if (relations.size() == 0) return false;
+
+
+    for (int i = 0; i < columnAmount; i++) {
+        if (columns[i] == InfoType::Id || columns[i] == InfoType::ManyId) {
+            ColumnRelation* r = findRelation(nameOfColumns[i]);
+            DynamicArray<int> ar = cur->dat[i]->getIntArray();
+            if (bd->findTable(r->toTable)->isSimilar(mask, ar[0], bd)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 
 
 
@@ -292,67 +329,9 @@ bool Table::parseInfo(DynamicArray<Info*>& result, std::string input, Database* 
     //сначала разбиваем по пробелам на "токены", проверяем их количество
     DynamicArray<std::string> tokens;
 
-    while (tokens.size() < columnAmount && pos < input.size()) {
-        std::string token;
+    if (!parseTokens(input, columnAmount, tokens)) return false;
 
-        if (input[pos] == '"') {
-            pos++;
-            std::string buffer;
 
-            while (pos < input.size()) {
-                char c = input[pos++];
-
-                if (c == '\\') {
-                    if (pos >= input.size()) return false;
-                    char nextChar = input[pos++];
-                    if (nextChar == '"') {
-                        buffer += '"';
-                    }
-                    else {
-                        return false;
-                    }
-                }
-                else {
-                    if (c == '"') {
-                        break;
-                    }
-                    else {
-                        buffer += c;
-                    }
-                }    
-            }
-            token = buffer;
-            if (pos < input.size() && input[pos] == ' ') {
-                pos++;
-            }
-        }
-        else {
-            int next = input.find(' ', pos);
-            if (next == std::string::npos) {
-                token = input.substr(pos);
-                pos = input.size();
-            }
-            else {
-                token = input.substr(pos, next - pos);
-                pos = next + 1;
-            }
-        }
-        tokens.append(token);
-    }
-
-    /*
-    for (int i = 0; i < columnAmount; i++) {
-        unsigned int next = input.find(' ', pos);
-        if (next == std::string::npos) {
-            if (i < columnAmount - 1) return false;
-            next = input.size();
-        }
-
-        std::string token = input.substr(pos, next - pos);
-        tokens.append(token);
-        pos = next + 1;
-    }
-    */
     if (tokens.size() != columnAmount) return false;
     // Проверяем каждый "токен" на соответствие типу данных. Если соответствует, добавляем в массив, иначе возвращаем false
     for (int i = 0; i < columnAmount; ++i) {
@@ -450,7 +429,13 @@ bool Table::editRowColumn(int nu, std::string column, std::string input, Databas
                     s += input + " ";
                 }
                 else {
-                    s += rowById.find(id)->dat[j]->getUserInput() + " ";
+                    if (rowById.find(id)->dat[j]->getType() == InfoType::String) {
+                        s += "\""+ rowById.find(id)->dat[j]->getUserInput() + "\" ";
+                    }
+                    else {
+                        s += rowById.find(id)->dat[j]->getUserInput() + " ";
+                    }
+                    
                 }
             }
             return editRow(nu, s, bd);
@@ -529,6 +514,7 @@ bool Table::sortBy(std::string name) {
 Node* Table::findRow(int id) {
     return rowById.find(id);
 }
+
 
 DynamicArray<Node*> Table::findInRows(std::string subs) {
     DynamicArray<Node*> nodes;
@@ -747,68 +733,12 @@ int Table::getColumnWidth(InfoType type, Database* bd, std::string column) {
 }
 
 
-DynamicArray<std::string> wrapText(const std::string& text, int maxWidth) {
-    DynamicArray<std::string> lines;
-    if (maxWidth <= 0) return lines;
-
-    std::string currentLine;
-    int currentWidth = 0;
-
-    for (size_t i = 0; i < text.size(); ) {
-        int charLen = 1;
-        if ((text[i] & 0xF0) == 0xF0) charLen = 4;
-        else if ((text[i] & 0xE0) == 0xE0) charLen = 3;
-        else if ((text[i] & 0xC0) == 0xC0) charLen = 2;
-
-        std::string currentChar = text.substr(i, charLen);
-        i += charLen;
-
-        if (currentWidth + 1 > maxWidth) {
-            lines.append(currentLine);
-            currentLine.clear();
-            currentWidth = 0;
-        }
-
-        currentLine += currentChar;
-        currentWidth += 1;
-    }
-
-    if (!currentLine.empty()) {
-        while (currentWidth < maxWidth) {
-            currentLine += ' ';
-            currentWidth++;
-        }
-        lines.append(currentLine);
-    }
-
-    return lines;
-}
-
-void Table::printDivider(Database* bd) {
-    std::cout << "+" << std::string(NUM_COLUMN_WIDTH, '-') << "+";
-    for (int i = 0; i < columnAmount; i++) {
-        int width = getColumnWidth(columns[i], bd, nameOfColumns[i]);
-        std::cout << std::string(width, '-') << "+";
-    }
-    std::cout << '\n';
-}
-
-
 void Table::printColumnNames(Database* bd) {
-    printDivider(bd);
-    std::cout << "|" << std::setw(NUM_COLUMN_WIDTH) << std::left << "NUM" << "|";
-    for (int i = 0; i < columnAmount; i++) {
-        int width = getColumnWidth(columns[i], bd, nameOfColumns[i]);
-        if (nameOfColumns[i].length() >= width) {
-            std::cout << std::setw(width) << std::left << nameOfColumns[i].substr(0, width - 1) << "|";
+    printColumnNamesGen(columns, nameOfColumns, columnAmount,
+        [&](InfoType type, const std::string& name) {
+            return getColumnWidth(type, bd, name);
         }
-        else {
-            std::cout << std::setw(width) << std::left << nameOfColumns[i] << "|";
-        }
-    }
-    std::cout << '\n';
-
-    printDivider(bd);
+    );
 }
 
 
@@ -820,59 +750,20 @@ void Table::PrintRow(Node* row, int number, Database* bd)
             return; 
         }
     }
-    DynamicArray<DynamicArray<std::string>> wrappedColumns;
-    int maxHeight = 1;
 
-    for (int i = 0; i < columnAmount; i++) {
-        int width = getColumnWidth(columns[i], bd, nameOfColumns[i]);
-        std::string inp;
-        if ((columns[i] != InfoType::Id && columns[i] != InfoType::ManyId) || relations.size() == 0) {
-            if (columns[i] == InfoType::ManyInt) {
-                DynamicArray<int> n = row->dat[i]->getIntArray();
-                for (int j = 0; j < n.size(); j++) {
-                    inp += std::to_string(n[j]) + " ";
-                }
-            }
-            else {
-                inp = row->dat[i]->getString();
-            }
+    printRowGeneric(
+        columns,
+        nameOfColumns,
+        columnAmount,
+        row,
+        number,
+        [&](const Info* info, int colIdx) {
+            return (getRelationText(info->getString(), colIdx, bd));
+        },
+        [&](InfoType type, const std::string& name) {
+            return getColumnWidth(type, bd, name);
         }
-        else {
-            inp = getRelationText(row->dat[i]->getString(), i, bd);
-        }
-        DynamicArray<std::string> lines = wrapText(inp, width);
-        if (maxHeight < lines.size()) {
-            maxHeight = lines.size();
-        }
-        wrappedColumns.append(std::move(lines));
-    }
-    
-
-    for (int line = 0; line < maxHeight; line++) {
-        std::cout << "|";
-        if (line == 0) {
-            std::cout << std::setw(NUM_COLUMN_WIDTH) << std::left << number;
-        }
-        else {
-            std::cout << std::setw(NUM_COLUMN_WIDTH) << " ";
-        }
-        std::cout << "|";
-
-        for (int column = 0; column < columnAmount; column++) {
-            int width = getColumnWidth(columns[column], bd, nameOfColumns[column]);
-
-            const auto& lines = wrappedColumns[column];
-            if (line < lines.size()) {
-                std::cout << std::setw(width) << std::left << lines[line];
-            }
-            else {
-                std::cout << std::setw(width) << " ";
-            }
-            std::cout << "|";
-        }
-        std::cout << '\n';
-    }
-    printDivider(bd);
+    );
 }
 
 
@@ -1004,8 +895,9 @@ std::string Table::getRelationText(const std::string& ids, int columnNum, Databa
         }
     }
     return res;
-
 }
+
+
 
 
 
@@ -1027,4 +919,39 @@ bool Table::IsInColumn(const std::string& columnName, const std::string& inp) {
     }
     return false;
 
+}
+
+DynamicArray<Node*> Table::getSimilar(Node* mask, Database* bd)
+{
+
+    DynamicArray<Node*> result;
+
+    for (int i = 0; i < rows.size(); i++) {
+        if (rows[i]->isLike(mask)) {
+            result.append(rows[i]); 
+        }
+        else {
+            bool flag = false;
+
+            if (relations.size() > 0) {
+                for (int j = 0; j < relations.size(); j++) {
+                    Table* tmp = bd->findTable(relations[j]->toTable);
+                    int typen;
+                    for (int k = 0; k < columnAmount; k++) {
+                        if (nameOfColumns[k] == relations[j]->columnName) {
+                            typen = k;
+                        }
+                    }
+                    DynamicArray<int> tmpAr = rows[i]->dat[typen]->getIntArray();
+
+                    if (tmp->isSimilar(mask, tmpAr[0], bd)) {
+                        result.append(rows[i]);
+                        break;
+                    }
+
+                }
+            }
+        }
+    }
+    return result;
 }
