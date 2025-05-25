@@ -721,11 +721,11 @@ void ConsoleApplication::proccessTable(std::stringstream& ss)
                                 std::string rowID;
                                 std::string column;
                                 std::string element;
+                                std::string tmp;
                                 ss >> rowID;
                                 ss >> column;
-                                ss >> element;
-
-
+                                while (ss >> tmp)
+                                    element = tmp + " ";
                                 if (isValidInt(rowID))
                                 {
                                     if (std::stoi(rowID) > 0)
