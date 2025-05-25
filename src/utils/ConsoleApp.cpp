@@ -381,41 +381,43 @@ void ConsoleApplication::proccessBD(std::stringstream& ss)
                 std::cout << "Database hasn't been created. Please, create one" << std::endl;
             }
         }
-        if (action == "deleteconnection")
-        {
-            if (database != nullptr && database->isLoaded())
+        else {
+            if (action == "deleteconnection")
             {
-                std::string fromTable, fromColumn, toTable, toColumn;
-                ss >> fromTable;
-                ss >> fromColumn;
-                ss >> toTable;
-                ss >> toColumn;
-                if (isValidInt(fromTable) && isValidInt(toTable))
+                if (database != nullptr && database->isLoaded())
                 {
-                    if (std::stoi(fromTable) >= 0 && std::stoi(toTable) >= 0)
+                    std::string fromTable, fromColumn, toTable, toColumn;
+                    ss >> fromTable;
+                    ss >> fromColumn;
+                    ss >> toTable;
+                    ss >> toColumn;
+                    if (isValidInt(fromTable) && isValidInt(toTable))
                     {
-                        if (database->deleteRelation(std::stoi(fromTable), fromColumn, std::stoi(toTable), toColumn))
+                        if (std::stoi(fromTable) >= 0 && std::stoi(toTable) >= 0)
                         {
-                            std::cout << "deleted" << std::endl;
+                            if (database->deleteRelation(std::stoi(fromTable), fromColumn, std::stoi(toTable), toColumn))
+                            {
+                                std::cout << "deleted" << std::endl;
+                            }
+                            else {
+                                std::cout << "error, check numbers of tables and names of columns" << endl;
+                            }
                         }
                         else {
-                            std::cout << "error, check numbers of tables and names of columns" << endl;
+                            std::cout << "number must be positive integer" << std::endl;
                         }
                     }
                     else {
-                        std::cout << "number must be positive integer" << std::endl;
+                        std::cout << "Not valid number of table, it must be an integer" << std::endl;
                     }
                 }
                 else {
-                    std::cout << "Not valid number of table, it must be an integer" << std::endl;
+                    std::cout << "Database hasn't been created. Please, create one" << std::endl;
                 }
             }
             else {
-                std::cout << "Database hasn't been created. Please, create one" << std::endl;
+                std::cout << "unknown Type of operation with database: " << action << std::endl;
             }
-        }
-        else {
-            std::cout << "unknown Type of operation with database: " << action << std::endl;
         }
         break;
 
