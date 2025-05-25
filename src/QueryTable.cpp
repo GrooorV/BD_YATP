@@ -207,11 +207,14 @@ void QueryTable::printColumns() {
 
 
 bool QueryTable::changeShown(std::string input) {
-	for (int i = 0; i < shownR.size(); i++) {
-		delete shownR[i];
-	}
-	shownR.clear();
+
 	DynamicArray<int> ch = parseIntArray(input);
+	for (int i = 0; i < ch.size(); i++) {
+		if (ch[i] > columnNames.size()) {
+			std::cout << "No column has number " << ch[i] << std::endl;
+			return false;
+		}
+	}
 
 	for (int i = 0; i < columnNames.size(); i++) {
 		shown[i] = false;
@@ -219,10 +222,6 @@ bool QueryTable::changeShown(std::string input) {
 	columnShownN = 0;
 
 	for (int i = 0; i < ch.size(); i++) {
-		if (ch[i] > columnNames.size()) {
-			std::cout << "No column has number " << ch[i] << std::endl;
-			return false;
-		}
 		shown[ch[i] - 1] = true;
 		columnShownN++;
 	}

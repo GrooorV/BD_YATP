@@ -30,7 +30,6 @@ private:
 	Node* mask;
 
 	DynamicArray<bool> shown;
-	DynamicArray<Node*> shownR;
 	DynamicArray<Node*> rows;
 	DynamicArray<std::string> columnNames;
 	DynamicArray<InfoType> columnTypes;
