@@ -36,7 +36,7 @@ QueryTable::QueryTable(Database* bd, int tableNum, int type, std::string input)
 	for (int i = 0; i < temp.size(); i++) {
 		DynamicArray<Info*> NEW;
 		collectNodeInfo(NEW, temp[i], table, bd);
-		rows.append(new Node(-1, NEW, -1));
+		rows.append(new Node(-1, NEW, -1, false));
 	}
 	
 	for (int i = 0; i < columnNames.size(); i++) {
