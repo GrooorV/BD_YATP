@@ -15,6 +15,7 @@ ConsoleApplication::ConsoleApplication()
 }
 
 void ConsoleApplication::run() {
+    std::cout << "Type \"help\" to see help" << std::endl;
     std::string command;
     while (true) {
         std::cout << ">> ";
