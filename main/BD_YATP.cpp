@@ -10,9 +10,9 @@ int main() {
 
     SetConsoleCP(CP_UTF8);
     SetConsoleOutputCP(CP_UTF8);
-    std::locale::global(std::locale(".UTF-8"));
+    std::locale::global(std::locale("C"));
     std::cin.imbue(std::locale());
-    std::cout.imbue(std::locale());
+    std::cout.imbue(std::locale("C"));
 
 
     ConsoleApplication c;
