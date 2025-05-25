@@ -231,29 +231,35 @@ void ConsoleApplication::proccessBD(std::stringstream& ss)
         else {
             if (action == "connect")
             {
-                std::string fromTable, fromColumn, toTable, toColumn;
-                ss >> fromTable;
-                ss >> fromColumn;
-                ss >> toTable;
-                ss >> toColumn;
-                if (isValidInt(fromTable) && isValidInt(toTable))
+                if (database != nullptr && database->isLoaded())
                 {
-                    if (std::stoi(fromTable) >= 0 && std::stoi(toTable) >= 0)
+                    std::string fromTable, fromColumn, toTable, toColumn;
+                    ss >> fromTable;
+                    ss >> fromColumn;
+                    ss >> toTable;
+                    ss >> toColumn;
+                    if (isValidInt(fromTable) && isValidInt(toTable))
                     {
-                        if (database->CreateRelation(std::stoi(fromTable), fromColumn, std::stoi(toTable), toColumn))
+                        if (std::stoi(fromTable) >= 0 && std::stoi(toTable) >= 0)
                         {
-                            std::cout << "Connections were added" << std::endl;
+                            if (database->CreateRelation(std::stoi(fromTable), fromColumn, std::stoi(toTable), toColumn))
+                            {
+                                std::cout << "Connections were added" << std::endl;
+                            }
+                            else {
+                                std::cout << "error" << endl;
+                            }
                         }
                         else {
-                            std::cout << "error" << endl;
+                            std::cout << "number must be positive integer" << std::endl;
                         }
                     }
                     else {
-                        std::cout << "number must be positive integer" << std::endl;
+                        std::cout << "Not valid number of table, it must be an integer" << std::endl;
                     }
                 }
                 else {
-                    std::cout << "Not valid number of table, it must be an integer" << std::endl;
+                    std::cout << "Database hasn't been created. Please, create one" << std::endl;
                 }
             }
             else {
@@ -266,7 +272,7 @@ void ConsoleApplication::proccessBD(std::stringstream& ss)
     case 'a':
         if (action == "add")
         {
-            if (database != nullptr)
+            if (database != nullptr && database->isLoaded())
             {
                 database->addNewTable();
                 std::cout << "Table was added" << std::endl;
@@ -279,7 +285,7 @@ void ConsoleApplication::proccessBD(std::stringstream& ss)
         {
             if (action == "addfromfile")
             {
-                if (database != nullptr)
+                if (database != nullptr && database->isLoaded())
                 {
                     std::string filename;
                     ss >> filename;
@@ -322,7 +328,7 @@ void ConsoleApplication::proccessBD(std::stringstream& ss)
     case 'd':
         if (action == "delete")//id
         {
-            if (database != nullptr)
+            if (database != nullptr && database->isLoaded())
             {
                 std::string id;
                 ss >> id;
@@ -350,29 +356,35 @@ void ConsoleApplication::proccessBD(std::stringstream& ss)
         }
         if (action == "deleteconnection")
         {
-            std::string fromTable, fromColumn, toTable, toColumn;
-            ss >> fromTable;
-            ss >> fromColumn;
-            ss >> toTable;
-            ss >> toColumn;
-            if (isValidInt(fromTable) && isValidInt(toTable))
+            if (database != nullptr && database->isLoaded())
             {
-                if (std::stoi(fromTable) >= 0 && std::stoi(toTable) >= 0)
+                std::string fromTable, fromColumn, toTable, toColumn;
+                ss >> fromTable;
+                ss >> fromColumn;
+                ss >> toTable;
+                ss >> toColumn;
+                if (isValidInt(fromTable) && isValidInt(toTable))
                 {
-                    if (database->deleteRelation(std::stoi(fromTable), fromColumn, std::stoi(toTable), toColumn))
+                    if (std::stoi(fromTable) >= 0 && std::stoi(toTable) >= 0)
                     {
-                        std::cout << "deleted" << std::endl;
+                        if (database->deleteRelation(std::stoi(fromTable), fromColumn, std::stoi(toTable), toColumn))
+                        {
+                            std::cout << "deleted" << std::endl;
+                        }
+                        else {
+                            std::cout << "error, check numbers of tables and names of columns" << endl;
+                        }
                     }
                     else {
-                        std::cout << "error, check numbers of tables and names of columns" << endl;
+                        std::cout << "number must be positive integer" << std::endl;
                     }
                 }
                 else {
-                    std::cout << "number must be positive integer" << std::endl;
+                    std::cout << "Not valid number of table, it must be an integer" << std::endl;
                 }
             }
             else {
-                std::cout << "Not valid number of table, it must be an integer" << std::endl;
+                std::cout << "Database hasn't been created. Please, create one" << std::endl;
             }
         }
         else {
@@ -384,7 +396,7 @@ void ConsoleApplication::proccessBD(std::stringstream& ss)
     case 's':
         if (action == "save")
         {
-            if (database != nullptr)
+            if (database != nullptr && database->isLoaded())
             {
                 if (database->saveAllToFiles())
                     std::cout << "Database was successfully saved" << endl;
@@ -402,34 +414,40 @@ void ConsoleApplication::proccessBD(std::stringstream& ss)
     case 'f':
         if (action == "find") // доделать
         {
-
-            std::string tmp, input;
-            while (ss >> tmp)
+            if (database != nullptr && database->isLoaded())
             {
-                input += tmp + " ";
-            }
-            DynamicArray<DynamicArray<Node*>> Nodes = database->findInTables(input);
-            for (int i = 0; i < Nodes.size(); i++)
-            {
-                if (action == "find")
+                std::string tmp, input;
+                while (ss >> tmp)
                 {
-                    DynamicArray<Node*> n = Nodes[i];
-                    Table* table = database->findTable(n[0]->tabN);
-                    table->printColumnNames(database);
-                    if (n.size() > 0)
+                    input += tmp + " ";
+                }
+                DynamicArray<DynamicArray<Node*>> Nodes = database->findInTables(input);
+                for (int i = 0; i < Nodes.size(); i++)
+                {
+                    if (action == "find")
                     {
-                        for (int i = 0; i < n.size(); i++) {
-                            table->printRow(n[i], database);
+                        DynamicArray<Node*> n = Nodes[i];
+                        Table* table = database->findTable(n[0]->tabN);
+                        table->printColumnNames(database);
+                        if (n.size() > 0)
+                        {
+                            for (int i = 0; i < n.size(); i++) {
+                                table->printRow(n[i], database);
+                            }
+                            std::cout << "\n";
                         }
-                        std::cout << "\n";
+                        else {
+                            std::cout << "Couldn't find rows with that element: " << std::endl;
+                        }
                     }
                     else {
-                        std::cout << "Couldn't find rows with that element: " << std::endl;
+                        std::cout << "Unknown Type of operation with table: " << std::endl;
                     }
+
                 }
-                else {
-                    std::cout << "Unknown Type of operation with table: " << std::endl;
-                }
+            }
+            else {
+                std::cout << "Database hasn't been created. Please, create one" << std::endl;
             }
 
         }
@@ -439,7 +457,7 @@ void ConsoleApplication::proccessBD(std::stringstream& ss)
     case 'p':
         if (action == "printnames")
         {
-            if (database != nullptr)
+            if (database != nullptr && database->isLoaded())
             {
                 database->printTables();
             }
@@ -450,7 +468,7 @@ void ConsoleApplication::proccessBD(std::stringstream& ss)
         else {
             if (action == "printrow")
             {
-                if (database != nullptr)
+                if (database != nullptr && database->isLoaded())
                 {
                     std::string rowID;
                     ss >> rowID;
@@ -484,7 +502,7 @@ void ConsoleApplication::proccessBD(std::stringstream& ss)
             else {
                 if (action == "print")
                 {
-                    if (database != nullptr)
+                    if (database != nullptr && database->isLoaded())
                     {
                         database->printFullTables();
                     }
@@ -509,7 +527,7 @@ void ConsoleApplication::proccessBD(std::stringstream& ss)
 
 void ConsoleApplication::proccessTable(std::stringstream& ss)
 {
-    if (database != nullptr)
+    if (database != nullptr && database->isLoaded())
     {
         std::string ID;
         ss >> ID;
@@ -725,7 +743,7 @@ void ConsoleApplication::proccessTable(std::stringstream& ss)
                                     }
                                 }
                                 else {
-                                    std::cout << "Not valid number of table, it must be an integer" << std::endl;
+                                    std::cout << "Not valid number of row, it must be an integer" << std::endl;
                                 }
                             }
                             else {
