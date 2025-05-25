@@ -1,6 +1,7 @@
 #pragma once
 #include "BD.h"
 #include "Validators.h"
+#include "QueryTable.h"
 
 
 void toLowercase(std::string& input);
@@ -15,11 +16,15 @@ private:
 
 	Database* database;
 
+	QueryTable* query;
+
 	void HELP();
 
 	void proccessBD(std::stringstream& ss);
 
 	void proccessTable(std::stringstream& ss);
+
+	void proccessFilter(std::stringstream& ss);
 
 	void deleteRowID(Table* table, std::string rowID);
 

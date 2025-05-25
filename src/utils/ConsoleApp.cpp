@@ -10,6 +10,8 @@ using namespace std;
 ConsoleApplication::ConsoleApplication()
 {
     database = nullptr;
+
+    query = nullptr;
 }
 
 void ConsoleApplication::run() {
@@ -66,6 +68,13 @@ void ConsoleApplication::run() {
                 std::cout << "Unknown command: " << action << std::endl;
             }
             break;
+        case 'f':
+            if (action == "filtered") {
+                proccessFilter(ss);
+            }
+            else {
+                std::cout << "Unknown command: " << action << std::endl;
+            }
         default:
             std::cout << "Unknown command: " << action << std::endl;
         }
@@ -769,6 +778,151 @@ void ConsoleApplication::proccessTable(std::stringstream& ss)
         }
         else {
             std::cout << "Not valid number of table, it must be an integer" << std::endl;
+        }
+    }
+    else {
+        std::cout << "Database hasn't been created. Please, create one" << std::endl;
+    }
+}
+
+void ConsoleApplication::proccessFilter(std::stringstream& ss)
+{
+    if (database != nullptr && database->isLoaded())
+    {
+        std::string action;
+        ss >> action;
+        toLowercase(action);
+        switch (action[0])
+        {
+        case 's':
+            if (action == "search")
+            {
+                std::string tableNum;
+                std::string type;
+                std::string tmp;
+                std::string element;
+                ss >> tableNum;
+                ss >> type;
+                if (isValidInt(tableNum) && isValidInt(type))
+                {
+                    if (std::stoi(tableNum) >= 0 && (std::stoi(type) == 1 || std::stoi(type) == 2))
+                    {
+                        if (database->findTable(tableNum) != nullptr)
+                        {
+                            while (ss >> tmp)
+                                element = tmp + " ";
+                            if (query != nullptr)
+                            {
+                                query = new QueryTable(database, std::stoi(tableNum), std::stoi(type), element);
+                                if (query->isFound() && query->foundRows() !=0)
+                                {
+                                    std::cout << "Created filtered table" << std::endl;
+                                    query->print();
+                                }
+                                else {
+                                    std::cout << "Couldn`t find any rows with that filter or problems with filter" << std::endl;
+                                    delete query;
+                                }
+                            }
+                            else {
+                                std::cout << "Filtered table already existed, creating new one..." << std::endl;
+                                delete query;
+                                query = new QueryTable(database, std::stoi(tableNum), std::stoi(type), element);
+                                if (query->isFound() && query->foundRows() != 0)
+                                {
+                                    std::cout << "Created filtered table" << std::endl;
+                                    query->print();
+                                }
+                                else {
+                                    std::cout << "Couldn`t find any rows with that filter or problems with filter" << std::endl;
+                                    delete query;
+                                }
+                            }
+                        }
+                        else {
+                            std::cout << "Couldn`t find table with that name" << std::endl;
+                        }
+                    }
+                    else {
+                        std::cout << "Not a valid table number or type of operation, nubmer must be positive and type is 1 or 2" << std::endl;
+                    }
+                }
+                else {
+                    std::cout << "Not a valid table number or type, they must be integers" << std::endl;
+                }
+            }
+            else {
+                std::cout << "Unknown Type of operation with filtered: " << action << std::endl;
+            }
+            break;
+
+        case 'f':
+            if (action == "filter")
+            {
+                if (query != nullptr)
+                {
+                    std::string type;
+                    std::string element;
+                    std::string tmp;
+                    if (isValidInt(type))
+                    {
+                        if (std::stoi(type) == 1 || std::stoi(type) == 2)
+                        {
+                            while (ss >> tmp)
+                                element = tmp + " ";
+                            query->filter(std::stoi(type), element);
+                            query->print();
+                        }
+                        else {
+                            std::cout << "Not a valid table number or type of operation, nubmer must be positive and type is 1 or 2" << std::endl;
+                        }
+                    }
+                    else {
+                        std::cout << "Not a valid table number or type, they must be integers" << std::endl;
+                    }
+                }
+                else {
+                    std::cout << "Filter hasn`t been created, please, create one" << std::endl;
+                }
+            }
+            else {
+                std::cout << "Unknown Type of operation with filtered: " << action << std::endl;
+            }
+            break;
+
+        case 'c':
+
+            break;
+
+        case 'p':
+            if (action == "print")
+            {
+                if (query != nullptr)
+                {
+                    query->print();
+                }
+                else {
+                    std::cout << "Filter hasn`t been created, please, create one" << std::endl;
+                }
+            }
+            else {
+                if (action == "printnames")
+                {
+                    if (query != nullptr)
+                    {
+                        query->printColumns();
+                    }
+                    else {
+                        std::cout << "Filter hasn`t been created, please, create one" << std::endl;
+                    }
+                }
+                else {
+                    std::cout << "Unknown Type of operation with filtered: " << action << std::endl;
+                }
+            }
+            break;
+        default:
+            std::cout << "Unknown Type of operation with filtered: " << action << std::endl;
         }
     }
     else {

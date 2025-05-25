@@ -44,6 +44,7 @@ QueryTable::QueryTable(Database* bd, int tableNum, int type, std::string input)
 	}
 	columnShownN = columnNames.size();
 
+	isOk = true;
 }
 
 QueryTable::~QueryTable()
