@@ -123,7 +123,6 @@ void QueryTable::print()
 	printColumnNamesGen(cTypes, cNames, columnShownN, getWidth);
 
 	for (int i = 0; i < rows.size(); i++) {
-		// Create a filtered Info array for the current row
 		DynamicArray<Info*> filteredRow;
 		int shownIndex = 0;
 		for (int j = 0; j < columnNames.size(); j++) {
