@@ -75,6 +75,8 @@ void ConsoleApplication::run() {
             else {
                 std::cout << "Unknown command: " << action << std::endl;
             }
+            break;
+
         default:
             std::cout << "Unknown command: " << action << std::endl;
         }
@@ -807,11 +809,11 @@ void ConsoleApplication::proccessFilter(std::stringstream& ss)
                 {
                     if (std::stoi(tableNum) >= 0 && (std::stoi(type) == 1 || std::stoi(type) == 2))
                     {
-                        if (database->findTable(tableNum) != nullptr)
+                        if (database->findTable(std::stoi(tableNum)) != nullptr)
                         {
                             while (ss >> tmp)
                                 element = tmp + " ";
-                            if (query != nullptr)
+                            if (query == nullptr)
                             {
                                 query = new QueryTable(database, std::stoi(tableNum), std::stoi(type), element);
                                 if (query->isFound() && query->foundRows() !=0)
@@ -864,6 +866,7 @@ void ConsoleApplication::proccessFilter(std::stringstream& ss)
                     std::string type;
                     std::string element;
                     std::string tmp;
+                    ss >> type;
                     if (isValidInt(type))
                     {
                         if (std::stoi(type) == 1 || std::stoi(type) == 2)
