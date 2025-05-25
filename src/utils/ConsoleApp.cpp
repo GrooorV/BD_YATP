@@ -815,7 +815,6 @@ void ConsoleApplication::proccessFilter(std::stringstream& ss)
                                 element += tmp + " ";
                             if (query == nullptr)
                             {
-                                cout << element << endl;
                                 query = new QueryTable(database, std::stoi(tableNum), std::stoi(type), element);
                                 if (query->isFound() && query->foundRows() !=0)
                                 {
@@ -895,7 +894,29 @@ void ConsoleApplication::proccessFilter(std::stringstream& ss)
             break;
 
         case 'c':
-
+            if (action == "changeshown")
+            {
+                if (query != nullptr)
+                {
+                    std::string element;
+                    std::string tmp;
+                    while (ss >> tmp)
+                        element += tmp + " ";
+                    if (query->changeShown(element))
+                    {
+                        query->print();
+                    }
+                    else {
+                        std::cout << "Couldn`t find columns with that number" << std::endl;
+                    }
+                }
+                else {
+                    std::cout << "Filter hasn`t been created, please, create one" << std::endl;
+                }
+            }
+            else {
+                std::cout << "Unknown Type of operation with filtered: " << action << std::endl;
+            }
             break;
 
         case 'p':
