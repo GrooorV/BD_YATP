@@ -442,7 +442,7 @@ void ConsoleApplication::proccessBD(std::stringstream& ss)
         }
         break;
     case 'f':
-        if (action == "find") // доделать
+        if (action == "find")
         {
             if (database != nullptr && database->isLoaded())
             {
@@ -599,7 +599,7 @@ void ConsoleApplication::proccessTable(std::stringstream& ss)
                                     {
                                         std::string rowID;
                                         ss >> rowID;
-                                        printRowID(table, rowID); //не уверен, что для пользователя это хорошо
+                                        printRowID(table, rowID);
                                     }
                                     else {
                                         std::cout << "Unknown Type of operation with table: " << action << std::endl;
@@ -677,7 +677,7 @@ void ConsoleApplication::proccessTable(std::stringstream& ss)
                         {
                             std::string rowID;
                             ss >> rowID;
-                            deleteRowID(table, rowID); //не уверен, что для пользователя это хорошо
+                            deleteRowID(table, rowID);
                         }
                         else {
                             if (action == "deletemany")
@@ -1037,8 +1037,8 @@ void ConsoleApplication::addMany(Table* table, int ID)
 
         if (table->addRow(newRow, database))
         {
-            table->printColumnNames(database); // потом можно будет убрать
-            table->PrintAllRows(database); // потом можно будет убрать
+            table->printColumnNames(database);
+            table->PrintAllRows(database);
             std::cout << "Successfully added new row to table: " << ID << std::endl;
         }
         else {
