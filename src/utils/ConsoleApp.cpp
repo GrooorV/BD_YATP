@@ -33,6 +33,7 @@ void ConsoleApplication::run() {
                 {
                     char save;
                     std::cout << "Would you like to save database? (y or n)" << std::endl;
+                    std::cout << ">> ";
                     std::cin >> save;
                     if (save == 'y')
                     {
